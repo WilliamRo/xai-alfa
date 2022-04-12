@@ -3,6 +3,17 @@
 
 # Customized files
 beta-*.py
+data
+*.sum
+gather.txt
+checkpoints
+checkpoint
+*.txt
+*mascot*.py
+*.zip
+tests
+*deprecated*
+tmp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
