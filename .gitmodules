@@ -4,3 +4,6 @@
 [submodule "roma"]
 	path = roma
 	url = https://github.com/WilliamRo/roma
+[submodule "pictor"]
+	path = pictor
+	url = https://github.com/WilliamRo/pictor
