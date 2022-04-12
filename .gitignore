@@ -1,3 +1,9 @@
+# PyCharm files
+.idea
+
+# Customized files
+beta-*.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
