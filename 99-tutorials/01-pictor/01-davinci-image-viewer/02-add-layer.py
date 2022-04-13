@@ -1,4 +1,5 @@
 import os
+import cv2
 
 from pictor import DaVinci
 from roster import get_xai_alfa_dir
@@ -17,10 +18,28 @@ images = train_set.features / 255.0
 
 
 # -----------------------------------------------------------------------------
-#  Show images in DaVinci
+#  Initialize a DaVinci
 # -----------------------------------------------------------------------------
 da = DaVinci('CIFAR-10 Viewer', init_as_image_viewer=True)
 
+
+# -----------------------------------------------------------------------------
+#  Define a plotter and add to `da`
+# -----------------------------------------------------------------------------
+def plotter(x, ax):
+  # Here x is the current object
+  # Do something to x
+  y = cv2.rotate(x, cv2.cv2.ROTATE_180)
+  # Plot
+  ax.imshow(y)
+  ax.axis('off')
+
+da.add_plotter(plotter)
+
+
+# -----------------------------------------------------------------------------
+#  Set images and display
+# -----------------------------------------------------------------------------
 # Set images
 da.objects = images
 # Set image titles
