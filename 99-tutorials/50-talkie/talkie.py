@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
 from pictor import DaVinci
-import _thread, threading
-
+from threading import Thread
+from typing import Optional
 
 
 class Talkie(DaVinci):
@@ -18,6 +18,7 @@ class Talkie(DaVinci):
 
     # Private fields
     self._messages = []
+    self._listener: Optional[Thread] = None
 
 
   def blah(self, ax: plt.Axes):
@@ -36,23 +37,32 @@ class Talkie(DaVinci):
     ax.axis('off')
 
 
-  def add_msg(self, text):
+  def add_msg(self, text, in_thread: bool = True):
     self._messages.append(text)
-    self._draw()
+    self._draw(in_thread=in_thread)
   am = add_msg
 
 
   def go(self):
+    import time
     def _go():
-      import time
-      self.add_msg('hahhahahhahhahhah')
-      time.sleep(1)
-      self.add_msg('hahhahahhahhahhah')
-      time.sleep(1)
-      self.add_msg('hahhahahhahhahhah')
-    # _thread.start_new_thread(_go, ())
-    t = threading.Thread(target=_go)
-    t.start()
+      self.add_msg('gogogogogogo', in_thread=True)
+      for _ in range(10):
+        time.sleep(2)
+        self.add_msg('gogogogogogo', in_thread=True)
+
+    self._listener = Thread(target=_go)
+    self._listener.start()
+
+
+  # region: Overwriting
+
+  def __del__(self):
+    if isinstance(self._listener, Thread) and self._listener.is_alive():
+      pass
+    print('deling')
+
+  # endregion
 
 
 
