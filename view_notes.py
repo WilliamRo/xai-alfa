@@ -43,7 +43,7 @@ while True:
   try:
     summ_path = local.wizard(extension='sum', max_depth=3,
                              current_dir=current_dir,
-                             input_with_enter=True)
+                             input_with_enter=len(sys.argv) == 1)
                              # input_with_enter=False)
 
     if summ_path is None:
