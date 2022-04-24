@@ -10,14 +10,24 @@ from tframe.utils.organizer.task_tools import update_job_dir
 # -----------------------------------------------------------------------------
 # Define model here
 # -----------------------------------------------------------------------------
-model_name = 'mlp'
-id = 1
+model_name = 'cnn'
+id = 2
 def model():
   th = core.th
-  model = m.get_container(flatten=True)
-  for n in core.th.archi_string.split('-'):
-    model.add(m.mu.Dense(int(n), activation=th.activation))
-    if th.dropout > 0: model.add(m.mu.Dropout(1 - th.dropout))
+  model = m.get_container(flatten=False)
+
+  for c in core.th.archi_string.split('-'):
+    if c == 'p':
+      model.add(m.mu.MaxPool2D(pool_size=2, strides=1))
+      continue
+
+    c = int(c)
+    model.add(m.mu.Conv2D(
+      filters=c, kernel_size=th.kernel_size,
+      activation=th.activation, use_batchnorm=th.use_batchnorm))
+
+  # Add flatten layer
+  model.add(m.mu.Flatten())
   return m.finalize(model)
 
 
@@ -44,9 +54,10 @@ def main(_):
   # ---------------------------------------------------------------------------
   th.model = model
 
-  th.archi_string = '128'
+  th.archi_string = '64-p-32'
+  th.kernel_size = 3
   th.activation = 'relu'
-  th.dropout = 0.0
+  th.use_batchnorm = False
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
@@ -62,7 +73,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------
-  th.mark = '{}({})_{}'.format(model_name, th.archi_string, th.activation)
+  th.mark = '{}({})'.format(model_name, th.archi_string)
   th.gather_summ_name = th.prefix + summ_name + '.sum'
   core.activate()
 
