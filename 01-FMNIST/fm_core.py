@@ -55,6 +55,9 @@ th.evaluate_train_set = True
 th.evaluate_val_set = True
 th.evaluate_test_set = True
 
+th.val_batch_size = 100
+th.eval_batch_size = 100
+
 
 def activate():
   # Load data
