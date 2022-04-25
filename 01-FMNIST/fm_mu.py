@@ -8,6 +8,7 @@ from fm_core import th
 def get_container(flatten=False):
   model = Classifier(mark=th.mark)
   model.add(mu.Input(sample_shape=[28, 28, 1]))
+  if th.centralize_data: model.add(mu.Normalize(mu=th.data_mean))
   if flatten: model.add(mu.Flatten())
   return model
 

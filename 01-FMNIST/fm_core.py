@@ -62,6 +62,7 @@ th.eval_batch_size = 100
 def activate():
   # Load data
   train_set, val_set, test_set = du.load_data()
+  if th.centralize_data: th.data_mean = train_set.feature_mean
 
   # Build model
   assert callable(th.model)
