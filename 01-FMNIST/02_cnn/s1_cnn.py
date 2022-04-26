@@ -15,7 +15,7 @@ pass
 # Specify summary file name and GPU ID here
 # -----------------------------------------------------------------------------
 summ_name = s.default_summ_name
-gpu_id = 0
+gpu_id = 1
 
 s.register('gather_summ_name', summ_name + '.sum')
 s.register('gpu_id', gpu_id)
@@ -29,8 +29,11 @@ s.register('patience', 10)
 
 s.register('lr', 0.0001, 0.001, 0.01)
 s.register('batch_size', 32, 128, 512)
-s.register('archi_string', '128', '258', '128-64', '256-128', '128-64-32')
-s.register('dropout', 0.0, 0.2, 0.4, 0.6)
+# s.register('archi_string', '64-p-128', '32-p-64', '32-32-p-64-64',
+#            '32-32-p-64-64-p-128-128')
+s.register('archi_string', '64-p-128', '32-p-64')
+s.register('suffix', '_gpu_2_2')
+s.register('use_batchnorm', True, False)
 
 # s.configure_engine(times=10)
 s.configure_engine(strategy='skopt', criterion='Best Accuracy')
