@@ -16,7 +16,7 @@ def model():
   th = core.th
   model = m.get_container(flatten=False)
 
-  for c in core.th.archi_string.split('-'):
+  for i, c in enumerate(core.th.archi_string.split('-')):
     if c == 'p':
       model.add(m.mu.MaxPool2D(pool_size=2, strides=1))
       continue
@@ -24,7 +24,7 @@ def model():
     c = int(c)
     model.add(m.mu.Conv2D(
       filters=c, kernel_size=th.kernel_size,
-      activation=th.activation, use_batchnorm=th.use_batchnorm))
+      activation=th.activation, use_batchnorm=th.use_batchnorm and i > 0))
 
   # Add flatten layer
   model.add(m.mu.Flatten())
