@@ -18,5 +18,5 @@ def finalize(model):
   model.add(mu.Dense(10, activation='softmax'))
 
   # Build model
-  model.build()
+  model.build(batch_metric=['accuracy'])
   return model
