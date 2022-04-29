@@ -72,7 +72,8 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------
-  th.mark = '{}({})'.format(model_name, th.archi_string)
+  th.mark = '{}(f{}-ns{}-mps{})'.format(
+    model_name, th.filters, th.num_stacks, th.module_per_stack)
   th.gather_summ_name = th.prefix + summ_name + '.sum'
   core.activate()
 
