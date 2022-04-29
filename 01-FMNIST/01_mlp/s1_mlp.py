@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../')
+sys.path.append('../../')
 
 from tframe.utils.script_helper import Helper
 s = Helper()
@@ -32,6 +33,5 @@ s.register('batch_size', 32, 128, 512)
 s.register('archi_string', '128', '258', '128-64', '256-128', '128-64-32')
 s.register('dropout', 0.0, 0.2, 0.4, 0.6)
 
-# s.configure_engine(times=10)
-s.configure_engine(strategy='skopt', criterion='Best Accuracy')
+s.configure_engine(times=2)
 s.run(rehearsal=False)
