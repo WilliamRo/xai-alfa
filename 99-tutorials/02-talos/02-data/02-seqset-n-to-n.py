@@ -1,5 +1,5 @@
-"""This script provides minimal example for preparing tframe.DataSet of aligned
-sequence-to-sequence problems such as signal denoise problems"""
+"""This script provides minimal example for preparing tframe.SequenceSet of
+aligned sequence-to-sequence problems such as signal denoise problems"""
 from tframe.data.sequences.seq_set import SequenceSet
 
 import numpy as np

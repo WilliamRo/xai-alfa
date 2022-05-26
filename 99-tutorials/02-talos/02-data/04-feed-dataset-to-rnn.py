@@ -1,6 +1,6 @@
-"""This script provides minimal example for preparing tframe.SequenceSet of
-summary problems such as signal denoise problems"""
-from tframe.data.sequences.seq_set import SequenceSet
+"""This script provides minimal example for preparing tframe.DataSet of
+aligned sequence-to-sequence problems such as signal denoise problems"""
+from tframe import DataSet
 
 import numpy as np
 
@@ -9,37 +9,26 @@ import numpy as np
 # -----------------------------------------------------------------------------
 # Create a simple dataset
 # -----------------------------------------------------------------------------
-def load_as_numpy_arrays(n):
-  features, targets = [], []
-  for _ in range(n):
-    L = np.random.randint(20, 30)
-    x = np.random.rand(L)
-    features.append(x)
-    targets.append(x[0])
-  return features, targets
-
+def load_as_numpy_arrays(L):
+  x = np.random.rand(L)
+  y = np.sin(x)
+  return x, y
 
 # Generate a sequence set
-features, targets = load_as_numpy_arrays(20)
-# Don't forget to set `n_to_one`
-data_set = SequenceSet(features, targets, name='Sin Set', n_to_one=True)
-# data_set = SequenceSet(features, summ_dict={'targets': targets},
-#                        name='Sin Set', n_to_one=True)
+features, targets = load_as_numpy_arrays(1000)
+data_set = DataSet(features, targets, name='Sin Set')
 
 # -----------------------------------------------------------------------------
 # See what is fed into an RNN at each iteration
 # -----------------------------------------------------------------------------
 batch_size = 3
+num_steps = 50
 for i, batch in enumerate(data_set.gen_rnn_batches(
-    batch_size=batch_size, num_steps=-1)):
-
+    batch_size=batch_size, num_steps=num_steps)):
   x, y = batch.features, batch.targets
-  print(f'[{i:02}] features: {x.shape}; targets: {y.shape}')
+  print(f'[{i + 1:02}] features: {x.shape}; targets: {y.shape}')
   assert isinstance(x, np.ndarray) and isinstance(y, np.ndarray)
 
-  # Display first batch
-  if i == 0:
-    for j, seq in enumerate(x): print(f'batch[{j}]: {seq.flatten()}')
 
 # -----------------------------------------------------------------------------
 # Create a simple model and do prediction
@@ -55,10 +44,10 @@ model.add(mu.Dense(1))
 
 th.optimizer = 'adam'
 th.learning_rate = 0.001
-model.build(last_only=True)  # last_only should be True
+model.build()
 
 # Predict use model
-output = model.predict(data_set)
+output = model.predict(data_set, num_steps=30)
 print()
 
 
