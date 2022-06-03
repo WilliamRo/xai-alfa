@@ -53,8 +53,6 @@ model = Predictor(mark='mascot', net_type=Recurrent)
 model.add(mu.Input(sample_shape=[1]))
 model.add(mu.Dense(1))
 
-th.optimizer = 'adam'
-th.learning_rate = 0.001
 model.build(last_only=True)  # last_only should be True
 
 # Predict use model
