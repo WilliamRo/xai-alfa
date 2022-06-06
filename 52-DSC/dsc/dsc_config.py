@@ -7,7 +7,7 @@ from roma import console
 class DSConfig(SmartTrainerHub):
 
   class Datasets:
-    pass
+    RML2016 = 'rml2016'
 
 
 # New hub class inherited from SmartTrainerHub must be registered
