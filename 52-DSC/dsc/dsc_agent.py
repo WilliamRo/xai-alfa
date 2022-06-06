@@ -51,4 +51,4 @@ class DSCAgent(DataAgent):
 if __name__ == '__main__':
   from dsc_core import th
   th.data_config = 'rml:*'
-  data = DSCAgent.load_as_tframe_data(th.data_dir)
+  data = DSCAgent.load_as_tframe_data(th.data_dir, 'rml')

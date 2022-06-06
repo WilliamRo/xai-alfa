@@ -8,18 +8,23 @@ from dsc.dsc_set import DSCSet
 
 class RMLSet(DSCSet):
 
-  SNR_list = np.linspace(-20, 18, 20).astype(int)
-  CLASS_NAMES = [
+  SNR_LIST = np.linspace(-20, 18, 20).astype(int)
+  CLASS_NAMES = ['BPSK', 'QPSK', '8PSK', '16QAM', '64QAM', 'BFSK', 'CPFSK',
+                 'PAM4', 'WBFM', 'AM-SSB', 'AM-DSB']
+  NUM_CLASSES = len(CLASS_NAMES)
 
-  ]
+  # region: Abstract Methods
+
+  def configure(self, config_string: str):
+    pass
 
   @classmethod
   def load_as_tframe_data(cls, data_dir):
-    data_dict = cls.load_raw_data(data_dir)
+    # Load raw data as data_dict, with a format of each items:
+    #   ('<class-name>', SNR): np.ndarray of shape (1000, 2, 128)
+    raw_data = cls.load_raw_data(data_dir)
 
-
-    return DSCSet(None)
-
+    return RMLSet(name='RML2016.10a', n_to_one=True, raw_data=raw_data)
 
   @classmethod
   def load_raw_data(cls, data_dir):
@@ -34,8 +39,17 @@ class RMLSet(DSCSet):
     # Load raw data dict and return
     with open(file_path, 'rb') as f: return pickle.load(f, encoding='latin-1')
 
+  def _check_data(self):
+    key = 'raw_data'
+    assert key in self.properties
+    assert len(self[key]) == 220
+
+  # endregion: Abstract Methods
+
+
+
 
 if __name__ == '__main__':
-  print(RMLSet.SNR_list)
+  print(RMLSet.SNR_LIST)
 
 
