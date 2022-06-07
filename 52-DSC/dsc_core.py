@@ -39,3 +39,40 @@ th.config_dir()
 # -----------------------------------------------------------------------------
 th.allow_growth = False
 th.gpu_memory_fraction = 0.30
+
+# -----------------------------------------------------------------------------
+# Configure dataset
+# -----------------------------------------------------------------------------
+th.val_proportion = 0.2
+th.test_proportion = 0.2
+
+# -----------------------------------------------------------------------------
+# Set common trainer configs
+# -----------------------------------------------------------------------------
+th.batch_size = 64
+th.num_steps = -1
+
+th.validation_per_round = 2
+
+th.save_model = True
+th.gather_note = True
+
+
+
+def activate():
+  # Load data
+  train_set, val_set, test_set = du.load()
+
+  assert callable(th.model)
+  model = th.model()
+  assert isinstance(model, Classifier)
+
+  # Train
+  if th.train:
+    model.train(train_set, validation_set=val_set, trainer_hub=th)
+  else:
+    model.evaluate_model(test_set)
+
+  # End
+  model.shutdown()
+  console.end()
