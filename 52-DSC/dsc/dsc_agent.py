@@ -14,19 +14,21 @@ class DSCAgent(DataAgent):
   """
 
   @classmethod
-  def load(cls, data_dir, **kwargs):
+  def load(cls, data_dir, val_size, test_size, train_size=-1, **kwargs):
     from dsc_core import th
     data_name, config_string = th.data_config.split(':')
 
     # Load DSCSet
     data_set = cls.load_as_tframe_data(data_dir, data_name)
+    data_set.configure(config_string)
 
     # Split and return
-    return None
+    return data_set.split(-1, val_size, test_size, over_classes=True,
+                          names=('Train-Set', 'Val-Set', 'Test-Set'))
 
 
   @classmethod
-  def load_as_tframe_data(cls, data_dir, data_name):
+  def load_as_tframe_data(cls, data_dir, data_name) -> DSCSet:
     file_path = cls._get_tfd_file_path(data_dir, data_name)
     if os.path.exists(file_path): return DSCSet.load(file_path)
 
@@ -39,7 +41,7 @@ class DSCAgent(DataAgent):
     data_set = DataSet.load_as_tframe_data(data_dir)
     data_set.save(file_path)
     console.show_status(f'Dataset saved to `{file_path}`')
-    return data
+    return data_set
 
 
   @classmethod
@@ -50,5 +52,6 @@ class DSCAgent(DataAgent):
 
 if __name__ == '__main__':
   from dsc_core import th
-  th.data_config = 'rml:*'
-  data = DSCAgent.load_as_tframe_data(th.data_dir, 'rml')
+  th.data_config = 'rml:10'
+  train_set, val_set, test_set = DSCAgent.load(th.data_dir, 100, 100)
+  print()

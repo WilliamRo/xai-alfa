@@ -8,23 +8,48 @@ from dsc.dsc_set import DSCSet
 
 class RMLSet(DSCSet):
 
+  class Keys:
+    raw_data = 'raw_data'
+    SNRs = 'SNRs'
+
   SNR_LIST = np.linspace(-20, 18, 20).astype(int)
-  CLASS_NAMES = ['BPSK', 'QPSK', '8PSK', '16QAM', '64QAM', 'BFSK', 'CPFSK',
+  CLASS_NAMES = ['BPSK', 'QPSK', '8PSK', 'QAM16', 'QAM64', 'GFSK', 'CPFSK',
                  'PAM4', 'WBFM', 'AM-SSB', 'AM-DSB']
-  NUM_CLASSES = len(CLASS_NAMES)
 
   # region: Abstract Methods
 
   def configure(self, config_string: str):
-    pass
+    """config_string should be '*' (load all data) or db1[,db2,...]
+    (load signals which have a SNR of db1 (or db2 ...)), e.g., '10,12'"""
+    snr_to_load = self.SNR_LIST if config_string in ('*', 'all') else [
+      int(db) for db in config_string.split(',')]
+
+    # Set data_dict and SNRs
+    data = self[self.Keys.raw_data]
+    features, targets, SNRs = [], [], []
+    for snr in snr_to_load:
+      for i, modulation in enumerate(self.CLASS_NAMES):
+        array = data[(modulation, snr)]
+        features.append(array)
+        targets.extend([i] * len(array))
+        SNRs.extend([snr] * len(array))
+
+    # Concatenate data
+    self.features = np.concatenate(features, axis=0)
+    self.targets = np.stack(targets, axis=0)
+    self.properties[self.Keys.SNRs] = SNRs
+
+    # Delete raw data in property
+    self.properties.pop(self.Keys.raw_data)
 
   @classmethod
   def load_as_tframe_data(cls, data_dir):
     # Load raw data as data_dict, with a format of each items:
     #   ('<class-name>', SNR): np.ndarray of shape (1000, 2, 128)
     raw_data = cls.load_raw_data(data_dir)
-
-    return RMLSet(name='RML2016.10a', n_to_one=True, raw_data=raw_data)
+    data_set = RMLSet(name='RML2016.10a', n_to_one=True, raw_data=raw_data)
+    data_set.properties[cls.NUM_CLASSES] = len(cls.CLASS_NAMES)
+    return data_set
 
   @classmethod
   def load_raw_data(cls, data_dir):
@@ -40,16 +65,22 @@ class RMLSet(DSCSet):
     with open(file_path, 'rb') as f: return pickle.load(f, encoding='latin-1')
 
   def _check_data(self):
-    key = 'raw_data'
-    assert key in self.properties
-    assert len(self[key]) == 220
+    """This method will be called during splitting dataset"""
+    if self.Keys.raw_data in self.properties:
+      assert len(self[self.Keys.raw_data]) == 220
 
   # endregion: Abstract Methods
 
+  # region: Data Visualization
+
+  def show(self):
+    pass
+
+  # endregion: Data Visualization
 
 
 
 if __name__ == '__main__':
-  print(RMLSet.SNR_LIST)
+  pass
 
 
