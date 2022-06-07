@@ -3,6 +3,7 @@ import os
 import pickle
 
 from dsc.dsc_set import DSCSet
+from tframe.utils import misc
 
 
 
@@ -35,8 +36,8 @@ class RMLSet(DSCSet):
         SNRs.extend([snr] * len(array))
 
     # Concatenate data
-    self.features = np.concatenate(features, axis=0)
-    self.targets = np.stack(targets, axis=0)
+    self.features = np.swapaxes(np.concatenate(features, axis=0), 1, 2)
+    self.targets = misc.convert_to_one_hot(targets, self.num_classes)
     self.properties[self.Keys.SNRs] = SNRs
 
     # Delete raw data in property

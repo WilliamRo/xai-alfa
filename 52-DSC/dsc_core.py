@@ -57,6 +57,10 @@ th.validation_per_round = 2
 th.save_model = True
 th.gather_note = True
 
+th.val_batch_size = 200
+th.eval_batch_size = 200
+th.val_progress_bar = True
+
 
 
 def activate():

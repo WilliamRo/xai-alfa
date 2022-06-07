@@ -25,11 +25,8 @@ class DSCAgent(DataAgent):
     data_set = cls.load_as_tframe_data(data_dir, data_name)
     data_set.configure(config_string)
 
-    # Swap axes of features
-    data_set.features = np.swapaxes(data_set.features, 1, 2)
-    data_set.targets = misc.convert_to_one_hot(data_set.targets,
-                                               data_set.num_classes)
-    # data_set.targets = np.reshape(data_set.targets, newshape=(-1, 1))
+    # Format data
+    data_set.format_data()
 
     # Calculate val/test size if proportion is provided
     if 0 < val_size < 1:

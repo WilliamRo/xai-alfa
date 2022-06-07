@@ -14,7 +14,8 @@ def load():
   assert isinstance(test_set, DSCSet)
 
   # input_shape and output_dim should be determined here
-  th.input_shape = train_set.features[0].shape
+  if th.use_rnn: th.input_shape = train_set.features[0][0].shape
+  else: th.input_shape = train_set.features[0].shape
   th.output_dim = train_set.num_classes
 
   return train_set, val_set, test_set
