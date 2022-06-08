@@ -103,7 +103,7 @@ class RMLSet(DSCSet):
 
   # region: Overwriting
 
-  def partition(self):
+  def partition_(self):
     from dsc_core import th
 
     val_p, test_p = th.val_proportion, th.test_proportion

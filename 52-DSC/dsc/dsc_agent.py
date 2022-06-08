@@ -17,7 +17,7 @@ class DSCAgent(DataAgent):
   """
 
   @classmethod
-  def load(cls, data_dir, val_proportion, test_proportion, **kwargs):
+  def load(cls, data_dir, **kwargs):
     from dsc_core import th
     data_name, config_string = th.data_config.split(':')
 

@@ -6,8 +6,7 @@ from dsc.dsc_agent import DSCAgent
 def load():
   from dsc_core import th
 
-  train_set, val_set, test_set = DSCAgent.load(
-    th.data_dir, th.val_proportion, th.test_proportion)
+  train_set, val_set, test_set = DSCAgent.load(th.data_dir)
 
   assert isinstance(train_set, DSCSet)
   assert isinstance(val_set, DSCSet)

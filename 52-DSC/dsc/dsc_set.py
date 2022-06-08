@@ -43,9 +43,9 @@ class DSCSet(SequenceSet):
       assert th.val_proportion + th.test_proportion < 1
 
       group_size = len(self.groups[0])
-      val_size = int(group_size * val_size)
-      test_size = int(group_size * test_size)
+      val_size = int(group_size * th.val_proportion)
+      test_size = int(group_size * th.test_proportion)
 
-    return self.split(-1, val_size, test_size,
-                      names=('TrainSet', 'ValSet', 'TestSet'))
+    return self.split(-1, val_size, test_size, over_classes=True,
+                      random=True, names=('TrainSet', 'ValSet', 'TestSet'))
 
