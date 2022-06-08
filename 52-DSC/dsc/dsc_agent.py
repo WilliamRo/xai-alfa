@@ -17,7 +17,7 @@ class DSCAgent(DataAgent):
   """
 
   @classmethod
-  def load(cls, data_dir, val_size, test_size, train_size=-1, **kwargs):
+  def load(cls, data_dir, val_proportion, test_proportion, **kwargs):
     from dsc_core import th
     data_name, config_string = th.data_config.split(':')
 
@@ -28,16 +28,8 @@ class DSCAgent(DataAgent):
     # Format data
     data_set.format_data()
 
-    # Calculate val/test size if proportion is provided
-    if 0 < val_size < 1:
-      assert 0 < test_size < 1 and val_size + test_size < 1
-      group_size = len(data_set.groups[0])
-      val_size = int(group_size * val_size)
-      test_size = int(group_size * test_size)
-
     # Split and return
-    return data_set.split(-1, val_size, test_size, over_classes=True,
-                          names=('Train-Set', 'Val-Set', 'Test-Set'))
+    return data_set.partition()
 
 
   @classmethod

@@ -31,7 +31,7 @@ class RMLSet(DSCSet):
          'a' represents amplitude, and 'p' represents phase.
          e.g., 'iq', 'ap'
     """
-    snr_config, channels = config_string.split(';')
+    snr_config, channels_config = config_string.split(';')
 
     # Find SNRs to load by parsing config_string
     if snr_config in ('*', 'all'): snr_to_load = self.SNR_LIST
@@ -43,24 +43,35 @@ class RMLSet(DSCSet):
     else: snr_to_load = [int(db) for db in snr_config.split(',')]
 
     # Check channels
-    assert 0 < len(channels) < 5
-    for c in channels: assert c in ('i', 'q', 'a', 'p')
-
-    # TODO: ----------------
+    assert 0 < len(channels_config) < 5
+    for c in channels_config: assert c in ('i', 'q', 'a', 'p')
 
     # Set data_dict and SNRs
-    data = self[self.Keys.raw_data]
-    features, targets, SNRs = [], [], []
+    data: dict = self[self.Keys.raw_data]
+    IQ_data, targets, SNRs = [], [], []
     for snr in snr_to_load:
       for i, modulation in enumerate(self.CLASS_NAMES):
         array = data[(modulation, snr)]
-        features.append(array)
+        IQ_data.append(array)
         targets.extend([i] * len(array))
         SNRs.extend([snr] * len(array))
 
-    # Concatenate data
-    self.features = np.swapaxes(np.concatenate(features, axis=0), 1, 2)
-    self.targets = misc.convert_to_one_hot(targets, self.num_classes)
+    # Generate features
+    channels_config = channels_config.lower()
+    IQ_data = np.concatenate(IQ_data, axis=0)
+    I, Q = IQ_data[:, 0], IQ_data[:, 1]
+    channels = []
+    if 'i' in channels_config: channels.append(I)
+    if 'q' in channels_config: channels.append(Q)
+    if 'a' in channels_config: channels.append(np.sqrt(I ** 2 + Q ** 2))
+    if 'p' in channels_config: channels.append(np.arctan(Q / I))
+
+    # Generate targets
+    one_hot_targets = misc.convert_to_one_hot(targets, self.num_classes)
+
+    # Set data
+    self.features = np.stack(channels, axis=-1)
+    self.targets = one_hot_targets
     self.properties[self.Keys.SNRs] = SNRs
 
     # Delete raw data in property
@@ -88,12 +99,25 @@ class RMLSet(DSCSet):
     # Load raw data dict and return
     with open(file_path, 'rb') as f: return pickle.load(f, encoding='latin-1')
 
+  # endregion: Abstract Methods
+
+  # region: Overwriting
+
+  def partition(self):
+    from dsc_core import th
+
+    val_p, test_p = th.val_proportion, th.test_proportion
+    assert 0 < val_p + test_p < 1
+
+    # TODO:
+
+
   def _check_data(self):
     """This method will be called during splitting dataset"""
     if self.Keys.raw_data in self.properties:
       assert len(self[self.Keys.raw_data]) == 220
 
-  # endregion: Abstract Methods
+  # endregion: Overwriting
 
   # region: Data Visualization
 
