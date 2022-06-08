@@ -50,7 +50,6 @@ th.test_proportion = 0.2
 # Set common trainer configs
 # -----------------------------------------------------------------------------
 th.batch_size = 64
-th.num_steps = -1
 
 th.validation_per_round = 2
 
@@ -72,10 +71,13 @@ def activate():
   assert isinstance(model, Classifier)
 
   # Train
-  if th.train:
-    model.train(train_set, validation_set=val_set, trainer_hub=th)
-  else:
-    model.evaluate_model(test_set)
+  if th.train: model.train(train_set, validation_set=val_set, trainer_hub=th)
+
+  # Evaluate
+  evaluate = lambda data_set: model.evaluate_pro(
+    data_set, th.eval_batch_size, verbose=True,
+    show_class_detail=True, show_confusion_matrix=True)
+  for data_set in (train_set, val_set, test_set): evaluate(data_set)
 
   # End
   model.shutdown()

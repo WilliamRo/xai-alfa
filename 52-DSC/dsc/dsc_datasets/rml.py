@@ -20,10 +20,33 @@ class RMLSet(DSCSet):
   # region: Abstract Methods
 
   def configure(self, config_string: str):
-    """config_string should be '*' (load all data) or db1[,db2,...]
-    (load signals which have a SNR of db1 (or db2 ...)), e.g., '10,12'"""
-    snr_to_load = self.SNR_LIST if config_string in ('*', 'all') else [
-      int(db) for db in config_string.split(',')]
+    """config_string should be <snr_config>;<channels>
+       <snr_config> should be
+         (1)'*': load all data,
+         (2) db1[,db2,...]: load signals which have a SNR of db1 (or db2 ...),
+             e.g., '10,12'
+         (3) db1-db2: load signals with SNR between db1 and db2
+       <channels> should be an non-empty string consisting of non-repeat
+         chars in ('i', 'q', 'a', 'p'), 'i'/'q' represent complex channels,
+         'a' represents amplitude, and 'p' represents phase.
+         e.g., 'iq', 'ap'
+    """
+    snr_config, channels = config_string.split(';')
+
+    # Find SNRs to load by parsing config_string
+    if snr_config in ('*', 'all'): snr_to_load = self.SNR_LIST
+    elif '-' in snr_config:
+      db_range = snr_config.split('-')
+      min_db = min(self.SNR_LIST) if db_range[0] == '' else int(db_range[0])
+      max_db = max(self.SNR_LIST) if db_range[1] == '' else int(db_range[1])
+      snr_to_load = [snr for snr in self.SNR_LIST if min_db <= snr <= max_db]
+    else: snr_to_load = [int(db) for db in snr_config.split(',')]
+
+    # Check channels
+    assert 0 < len(channels) < 5
+    for c in channels: assert c in ('i', 'q', 'a', 'p')
+
+    # TODO: ----------------
 
     # Set data_dict and SNRs
     data = self[self.Keys.raw_data]
