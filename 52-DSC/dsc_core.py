@@ -52,6 +52,7 @@ th.test_proportion = 0.2
 th.batch_size = 64
 
 th.validation_per_round = 2
+th.export_tensors_upon_validation = True
 
 th.save_model = True
 th.gather_note = True
@@ -71,7 +72,10 @@ def activate():
   assert isinstance(model, Classifier)
 
   # Train
-  if th.train: model.train(train_set, validation_set=val_set, trainer_hub=th)
+  if th.train:
+    model.train(train_set, validation_set=val_set, trainer_hub=th)
+    # Load best model for evaluation
+    model.agent.load()
 
   # Evaluate
   evaluate = lambda data_set: model.evaluate_pro(

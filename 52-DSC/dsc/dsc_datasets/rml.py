@@ -5,6 +5,7 @@ import pickle
 from dsc.dsc_set import DSCSet
 from tframe.utils import misc
 from tframe import console
+from tframe import pedia
 
 
 
@@ -93,6 +94,7 @@ class RMLSet(DSCSet):
     raw_data = cls.load_raw_data(data_dir)
     data_set = RMLSet(name='RML2016.10a', n_to_one=True, raw_data=raw_data)
     data_set.properties[cls.NUM_CLASSES] = len(cls.CLASS_NAMES)
+    data_set.properties[pedia.classes] = cls.CLASS_NAMES
     return data_set
 
   @classmethod
