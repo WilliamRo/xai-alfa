@@ -17,6 +17,10 @@ def load():
   else: th.input_shape = train_set.features[0].shape
   th.output_dim = train_set.num_classes
 
+  train_set.report()
+  val_set.report()
+  test_set.report()
+
   return train_set, val_set, test_set
 
 

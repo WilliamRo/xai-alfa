@@ -81,7 +81,7 @@ class RMLSet(DSCSet):
     # Set data
     self.features = np.stack(channels, axis=-1)
     self.targets = one_hot_targets
-    self.data_dict[self.Keys.SNRs] = SNRs
+    self.properties[self.Keys.SNRs] = SNRs
 
     # Delete raw data in property
     self.properties.pop(self.Keys.raw_data)
