@@ -24,6 +24,10 @@ def load():
 if __name__ == '__main__':
   from dsc_core import th
 
-  th.data_config = 'rml:*'
+  th.data_config = 'rml:10-;iq'
+  th.report_detail = True
   train_set, val_set, test_set = load()
-  print()
+  # print(train_set.SNRs)
+  train_set.report()
+  val_set.report()
+  test_set.report()

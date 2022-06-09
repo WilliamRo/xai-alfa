@@ -25,6 +25,10 @@ class DSCSet(SequenceSet):
     raise NotImplementedError
 
 
+  def report(self):
+    raise NotImplementedError
+
+
   def format_data(self):
     from dsc_core import th
 

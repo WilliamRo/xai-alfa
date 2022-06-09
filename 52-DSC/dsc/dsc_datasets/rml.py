@@ -4,6 +4,7 @@ import pickle
 
 from dsc.dsc_set import DSCSet
 from tframe.utils import misc
+from tframe import console
 
 
 
@@ -16,6 +17,14 @@ class RMLSet(DSCSet):
   SNR_LIST = np.linspace(-20, 18, 20).astype(int)
   CLASS_NAMES = ['BPSK', 'QPSK', '8PSK', 'QAM16', 'QAM64', 'GFSK', 'CPFSK',
                  'PAM4', 'WBFM', 'AM-SSB', 'AM-DSB']
+
+  # region: Properties
+
+  @DSCSet.property()
+  def SNRs(self):
+    return list(sorted(set(self[self.Keys.SNRs])))
+
+  # endregion: Properties
 
   # region: Abstract Methods
 
@@ -72,7 +81,7 @@ class RMLSet(DSCSet):
     # Set data
     self.features = np.stack(channels, axis=-1)
     self.targets = one_hot_targets
-    self.properties[self.Keys.SNRs] = SNRs
+    self.data_dict[self.Keys.SNRs] = SNRs
 
     # Delete raw data in property
     self.properties.pop(self.Keys.raw_data)
@@ -98,6 +107,35 @@ class RMLSet(DSCSet):
 
     # Load raw data dict and return
     with open(file_path, 'rb') as f: return pickle.load(f, encoding='latin-1')
+
+  def report(self):
+    from dsc_core import th
+    from tframe.utils.display.table import Table
+
+    console.show_info(f'{self.name} Detail')
+    console.supplement(f'Shape of features: {self.features.shape}')
+    console.supplement(f'Shape of targets: {self[self.TARGETS].shape}')
+
+    if not th.report_detail:
+      console.supplement(f'Length of groups: {[len(g) for g in self.groups]}')
+      return
+
+    # Initialize a Table
+    width = max([len(s) for s in self.CLASS_NAMES])
+    t = Table(*([3] + [width] * len(self.CLASS_NAMES)))
+    t.print_header('', *self.CLASS_NAMES)
+
+    m = np.zeros(shape=(len(self.SNRs), len(self.CLASS_NAMES)), dtype=int)
+    for j, indices in enumerate(self.groups):
+      for i, snr in enumerate(self.SNRs):
+        m[i, j] = sum(np.equal(snr, [self[self.Keys.SNRs][ind]
+                                     for ind in indices]))
+
+    # Print
+    for r, snr in zip(m, self.SNRs): t.print_row(snr, *r)
+    t.hline()
+    t.print_row('Sum', *[len(g) for g in self.groups])
+    t.hline()
 
   # endregion: Abstract Methods
 
