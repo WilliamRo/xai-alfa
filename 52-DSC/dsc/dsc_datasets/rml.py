@@ -162,13 +162,33 @@ class RMLSet(DSCSet):
   # region: Data Visualization
 
   def show(self):
-    pass
+    from pictor import Pictor
+    from pictor.objects.signals import DigitalSignal, SignalGroup
+
+    # Wrap objects as
+    objects = [SignalGroup(
+      DigitalSignal(signal, channel_names=('In-phase', 'Quadrature')),
+      label=self.CLASS_NAMES[i])
+      for signal, i in zip(self.features, self.dense_labels)]
+
+    p = Pictor.signal_viewer('RML2016.10a', figure_size=(8, 6))
+    p.objects = objects
+    p.show()
 
   # endregion: Data Visualization
 
 
 
 if __name__ == '__main__':
-  pass
+  from dsc_core import th
+  from dsc.dsc_agent import DSCAgent
+  from dsc.dsc_datasets.rml import RMLSet
+  import dsc_du as du
 
+  th.data_config = 'rml:10-;iq'
+  train_set, val_set, test_set = DSCAgent.load(th.data_dir)
+  assert isinstance(train_set, RMLSet)
+  train_set.report()
+
+  train_set.show()
 
