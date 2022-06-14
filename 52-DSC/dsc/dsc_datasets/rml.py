@@ -171,8 +171,11 @@ class RMLSet(DSCSet):
       label=self.CLASS_NAMES[i])
       for signal, i in zip(self.features, self.dense_labels)]
 
-    p = Pictor.signal_viewer('RML2016.10a', figure_size=(8, 6))
+    p: Pictor = Pictor.signal_viewer('RML2016.10a', figure_size=(8, 6))
     p.objects = objects
+    def filter(contain: str = ''):
+      p.filter_by_func(lambda obj: contain in obj.label)
+    p.filter = filter
     p.show()
 
   # endregion: Data Visualization
@@ -188,7 +191,7 @@ if __name__ == '__main__':
   th.data_config = 'rml:10-;iq'
   train_set, val_set, test_set = DSCAgent.load(th.data_dir)
   assert isinstance(train_set, RMLSet)
-  train_set.report()
+  # train_set.report()
 
   train_set.show()
 
