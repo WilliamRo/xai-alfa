@@ -71,6 +71,10 @@ def activate():
   model = th.model()
   assert isinstance(model, Classifier)
 
+  if th.rehearse:
+    model.agent.launch_model()
+    return
+
   # Train
   if th.train:
     model.train(train_set, validation_set=val_set, trainer_hub=th)
