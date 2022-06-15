@@ -164,6 +164,8 @@ class RMLSet(DSCSet):
   def show(self):
     from pictor import Pictor
     from pictor.objects.signals import DigitalSignal, SignalGroup
+    from pictor.plotters.oscilloscope import Oscilloscope
+    from pictor.plotters.arsenal.iqscope import IQScope
 
     # Wrap objects as
     objects = [SignalGroup(
@@ -171,7 +173,9 @@ class RMLSet(DSCSet):
       label=self.CLASS_NAMES[i])
       for signal, i in zip(self.features, self.dense_labels)]
 
-    p: Pictor = Pictor.signal_viewer('RML2016.10a', figure_size=(8, 6))
+    p: Pictor = Pictor('RML2016.10a', figure_size=(8, 6))
+    p.add_plotter(IQScope(default_win_size=128, y_ticks=False))
+    p.add_plotter(Oscilloscope(default_win_size=128, y_ticks=False))
     p.objects = objects
     def filter(contain: str = ''):
       p.filter_by_func(lambda obj: contain in obj.label)
