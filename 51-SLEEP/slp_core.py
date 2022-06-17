@@ -21,8 +21,8 @@ for _ in range(DIR_DEPTH):
   ROOT = os.path.dirname(ROOT)
   if sys.path[0] != ROOT: sys.path.insert(0, ROOT)
 # =============================================================================
+from slp.slp_config import SLPConfig as Hub
 from tframe import console
-from tframe import DefaultHub as Hub
 from tframe import Classifier
 
 import slp_du as du
