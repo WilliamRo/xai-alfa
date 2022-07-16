@@ -25,7 +25,7 @@ from slp.slp_config import SLPConfig as Hub
 from tframe import console
 from tframe import Classifier
 
-import slp_du as du
+# import slp_du as du
 
 
 # -----------------------------------------------------------------------------

@@ -35,8 +35,8 @@ class SLPAgent(DataAgent):
     if os.path.exists(file_path): return SleepSet.load(file_path)
 
     # If dataset does not exist, create a new one, save and return
-    if data_name in ('ucddb',):
-      from dsc.dsc_datasets.rml import RMLSet as DataSet
+    if data_name == 'ucddb':
+      from slp.slp_datasets.ucddb import UCDDB as DataSet
     else: raise KeyError(f'!! Unknown dataset `{data_name}`')
 
     console.show_status(f'Loading `{data_name}` from {data_dir}')
