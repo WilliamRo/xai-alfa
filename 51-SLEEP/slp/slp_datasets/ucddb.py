@@ -146,7 +146,7 @@ class UCDDB(SleepSet):
 
   def _check_data(self):
     """This method will be called during splitting dataset"""
-    assert len(self.signal_groups) == 25
+    assert len(self.signal_groups) > 0
 
   # endregion: Overwriting
 
@@ -160,7 +160,9 @@ class UCDDB(SleepSet):
 
     p = Pictor(title='UCDDB-1.0.0', figure_size=(12, 8))
     p.objects = self.signal_groups
-    p.add_plotter(Monitor(channels=','.join(channels)))
+    m: Monitor = p.add_plotter(Monitor(channels=','.join(channels)))
+    m.channel_list = [
+      c for c, _, _ in self.signal_groups[0].name_tick_data_list]
     p.show()
 
   # endregion: Data Visualization
