@@ -19,6 +19,9 @@ class UCDDB(SleepSet):
   """
 
   TICKS_PER_EPOCH = 128 * 30
+  STAGE_KEY = 'STAGE'
+  STAGE_LABELS = ['Wake', 'REM', 'Stage 1', 'Stage 2', 'Stage 3', 'Stage 4',
+                  'Artifact', 'Indeterminate']
 
   class DetailKeys:
     number = 'Study Number'
@@ -113,13 +116,17 @@ class UCDDB(SleepSet):
       with open(fn, 'r') as stage:
         stage_ann = [int(line.strip()) for line in stage.readlines()]
       stages = np.array(stage_ann)
+      stages[stages > 7] = 7
+      assert max(stages) <= 7
 
-      # .. sanity check
+      # .. sanity check (for ucddb, '-1' is necessary. Error will occur
+      # otherwise)
       L = (digital_signals[1].length - 1) // cls.TICKS_PER_EPOCH
       assert len(stages) == L
 
       # Wrap data into signal group
       sg = SignalGroup(digital_signals, label=f'{id}', **detail_dict)
+      sg.set_annotation(cls.STAGE_KEY, 30, stages, cls.STAGE_LABELS)
       sleep_groups.append(sg)
 
       # Save sg if necessary
@@ -156,13 +163,27 @@ class UCDDB(SleepSet):
     from pictor import Pictor
     from pictor.plotters import Monitor
 
-    channels = ['Lefteye', 'C3A2', 'Sound']
-
+    # Initialize pictor and set objects
     p = Pictor(title='UCDDB-1.0.0', figure_size=(12, 8))
     p.objects = self.signal_groups
+
+    # Set monitor
+    channels = ['Lefteye', 'C3A2', 'ECG', 'Sound']
     m: Monitor = p.add_plotter(Monitor(channels=','.join(channels)))
-    m.channel_list = [
-      c for c, _, _ in self.signal_groups[0].name_tick_data_list]
+    m.channel_list = [c for c, _, _ in self.signal_groups[0].name_tick_data_list]
+
+    # .. set annotation logic
+    anno_key = 'annotation'
+    m.set(anno_key, self.STAGE_KEY)
+    def on_press_a():
+      if m.get(anno_key) is None: m.set(anno_key, self.STAGE_KEY)
+      else: m.set(anno_key)
+    m.register_a_shortcut('a', on_press_a, 'Flip annotation')
+
+    # import matplotlib.style as mplstyle
+    # mplstyle.use('fast')
+
+    # Show pictor
     p.show()
 
   # endregion: Data Visualization
