@@ -1,8 +1,11 @@
-from pictor import DaVinci
+from roma.spqr.threading import XNode
+from pictor import Pictor
+from pictor.plugins.timer import Timer
+from pictor.objects import ParticleSystem
 
 
 
-class NanoBox(DaVinci):
+class NanoBox(Pictor, XNode, Timer):
   pass
 
 
