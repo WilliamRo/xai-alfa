@@ -33,7 +33,7 @@ def simulate(pkg: dict, dt: float):
   # Update coords
   new_f = np.zeros_like(f)
   new_v = v + f / m * dt
-  new_r = r + v * dt
+  new_r = r + new_v * dt
 
   return {'coords': new_r, 'v': new_v, 'f': new_f}
 
