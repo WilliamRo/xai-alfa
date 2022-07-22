@@ -1,12 +1,13 @@
 from pictor.objects.particle_dynamic import ParticleSystem
 from pictor.plotters.plotter_base import Plotter
+from pictor.plugins.timer import Timer
+from roma.spqr.threading import XNode
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 
-class CatEye(Plotter):
+class CatEye(Plotter, XNode, Timer):
 
   def __init__(self, pictor=None):
     # Call parent's constructor
@@ -24,11 +25,11 @@ class CatEye(Plotter):
 
   # region: Plot Methods
 
-  def plot_particles(self, x: tuple, ax: plt.Axes, fig: plt.Figure):
+  def plot_particles(self, x: tuple, ax: plt.Axes):
     """Objects in NanoBox should be a list of tuples (track_name, t)"""
     # If x is not provided
     if x is None:
-      self.show_text('No particle found', fig=fig)
+      self.show_text('No particle found', ax=ax)
       return
 
     # Unpack x
@@ -50,7 +51,7 @@ class CatEye(Plotter):
 
   # endregion: Plot Methods
 
-  # region: Private Methods
+  # region: Registration
 
   def _register_settable_attributes(self):
     self.new_settable_attr('xmin', None, float, 'x-axis minimal value')
@@ -61,4 +62,27 @@ class CatEye(Plotter):
     self.new_settable_attr('ylabel', None, str, 'Label of y-axis')
     self.new_settable_attr('size', 1000, float, 'Particle size')
 
-  # endregion: Private Methods
+  def register_shortcuts(self):
+    self.register_a_shortcut('space', self.play_pause, 'Play')
+
+  # endregion: Registration
+
+  # region: Threading
+
+  def play_pause(self):
+    if self.child_nodes:
+      print('Pause')
+      self.child_nodes[0].terminate()
+      self.pictor.title = self.pictor.static_title
+    else:
+      print('Play')
+      self.execute_a_new_child(self._play)
+
+  def _play(self):
+    self._tic()
+    # Press 'j'
+    self.pictor.shortcuts.library['j'][0]()
+    self.pictor.title = f'{self.pictor.static_title} (FPS = {self.fps:.1f})'
+    self.refresh(in_thread=True)
+
+  # endregion: Threading
