@@ -36,8 +36,8 @@ def simulate(pkg: dict, dt: float):
 
 nb.simulate = simulate
 R = 3.5
-nb.set_plotter(xmin=-R, xmax=R, ymin=-R, ymax=R, zmin=-R, zmax=R,
-               xlabel='meters', ylabel='meters', zlabel='meters', size=500)
+nb.config_plotter(xmin=-R, xmax=R, ymin=-R, ymax=R, zmin=-R, zmax=R,
+                  xlabel='meters', ylabel='meters', zlabel='meters', size=500)
 
 nb.calculate_steps(0.05, 199, auto_refresh=False)
 nb.show()

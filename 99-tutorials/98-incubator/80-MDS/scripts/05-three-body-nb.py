@@ -33,8 +33,8 @@ def simulate(pkg: dict, dt: float):
 
 
 nb.simulate = simulate
-nb.set_plotter(xmin=-3.5, xmax=3.5, ymin=-3.5, ymax=3.5,
-               xlabel='meters', ylabel='meters', size=500)
+nb.config_plotter(xmin=-3.5, xmax=3.5, ymin=-3.5, ymax=3.5,
+                  xlabel='meters', ylabel='meters', size=500)
 
 nb.calculate_steps(0.05, 199, auto_refresh=False)
 nb.show()
