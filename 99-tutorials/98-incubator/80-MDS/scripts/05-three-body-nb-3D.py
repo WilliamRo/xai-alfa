@@ -4,10 +4,12 @@ from nanobox.box import NanoBox
 
 
 
-init_coords = np.array([[0., 2.], [2., 0.], [-1., 0.]])
+init_coords = np.array([[0., 2., -1.],
+                        [2., 0., 0.],
+                        [-1., 0., 1.]])
 dim = len(init_coords[0])
 
-nb = NanoBox(len(init_coords), f'Three Body ({dim}D)')
+nb = NanoBox(len(init_coords), f'Three Body ({dim}D)', dimension=dim)
 
 nb.register_var('coords', dim, init_value=init_coords)
 nb.register_var('v', dim)
@@ -33,8 +35,9 @@ def simulate(pkg: dict, dt: float):
 
 
 nb.simulate = simulate
-nb.set_plotter(xmin=-3.5, xmax=3.5, ymin=-3.5, ymax=3.5,
-               xlabel='meters', ylabel='meters', size=500)
+R = 3.5
+nb.set_plotter(xmin=-R, xmax=R, ymin=-R, ymax=R, zmin=-R, zmax=R,
+               xlabel='meters', ylabel='meters', zlabel='meters', size=500)
 
 nb.calculate_steps(0.05, 199, auto_refresh=False)
 nb.show()

@@ -8,18 +8,16 @@ from nanobox.cateye import CatEye, Plotter
 
 
 class NanoBox(Pictor, ParticleSystem, XNode, Timer):
-  """A NanoBox is bound to a ParticleSystem
-  TODO: <3-D> <play>
-  """
+  """A NanoBox is bound to a ParticleSystem"""
 
   def __init__(self, num_particles, title='NanoBox', figure_size=(6, 6),
-               plotter=None):
+               dimension=2, plotter=None):
     # Call parents' constructors
     Pictor.__init__(self, title, figure_size)
     ParticleSystem.__init__(self, num_particles)
 
     # Set plotter
-    if plotter is None: plotter = CatEye(self)
+    if plotter is None: plotter = CatEye(self, dimension=dimension)
     self.add_plotter(plotter)
 
   # region: Properties
