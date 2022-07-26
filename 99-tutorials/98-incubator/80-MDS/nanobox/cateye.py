@@ -14,10 +14,13 @@ import matplotlib.pyplot as plt
 class CatEye(Plotter, XNode, Timer):
 
   def __init__(self, pictor=None, dimension=2):
+    # Attributes
+    self.dimension = dimension
+
     # Call parent's constructor
     super(CatEye, self).__init__(self.get_plotter(dimension), pictor)
 
-    #
+    # Other settings
     self._register_settable_attributes()
 
   # region: Properties
@@ -81,8 +84,31 @@ class CatEye(Plotter, XNode, Timer):
     self.new_settable_attr('zlabel', None, str, 'Label of z-axis')
     self.new_settable_attr('size', 1, float, 'Particle size')
 
+    self.new_settable_attr('sleep', 0.01, float, 'Sleep time before each frame '
+                                                 'while playing')
+
+    # Set view angle rotation function parameters for 3D box
+    if self.dimension == 3:
+      self.new_settable_attr('elev_step', 2, float, 'Elevation step')
+      self.new_settable_attr('azim_step', 2, float, 'Azimuth step')
+
   def register_shortcuts(self):
     self.register_a_shortcut('space', self.play_pause, 'Play')
+
+    # Set view angle rotation shortcuts for 3D box
+    if self.dimension == 3:
+
+      def set_shortcut(k, d, s):
+        get_s = lambda: (self.get('elev_step') * s[0],
+                         self.get('azim_step') * s[1])
+        self.pictor.shortcuts.register_key_event(
+          k, lambda: self.pictor.canvas.move_view_angle(*get_s()),
+          d, overwrite=True)
+
+      set_shortcut('Left', 'Decrease azimuth angle', (0, -1))
+      set_shortcut('Right', 'Increase azimuth angle', (0, 1))
+      set_shortcut('Down', 'Increase elevation angle', (-1, 0))
+      set_shortcut('Up', 'Decrease elevation angle', (1, 0))
 
   # endregion: Registration
 
@@ -101,6 +127,8 @@ class CatEye(Plotter, XNode, Timer):
   def _play(self):
     box = self.pictor
     self._tic()
+    # Sleep
+    time.sleep(self.get('sleep'))
     # Press 'j'
     box.set_cursor(box.Keys.OBJECTS, 1, refresh=False)
     # After termination, this title suffix will still exist
