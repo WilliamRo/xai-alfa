@@ -8,11 +8,11 @@ import os
 
 
 
-class MTXAgent(object):
+class LLLAgent(object):
 
   @classmethod
   def load(cls) -> Tuple[DataSet]:
-    from mtx_core import th
+    from lll_core import th
 
     data_dir = th.data_dir
     if 'fmnist' in th.data_config:

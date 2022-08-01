@@ -22,11 +22,11 @@ for _ in range(DIR_DEPTH):
   if sys.path[0] != ROOT: sys.path.insert(0, ROOT)
 # =============================================================================
 from tframe import console
-from mtx.mtx_config import MTXConfig as Hub
+from lll.lll_config import LLLConfig as Hub
 from tframe import Classifier
 from tframe.enums import SaveMode
 
-import mtx_du as du
+import lll_du as du
 
 
 # -----------------------------------------------------------------------------

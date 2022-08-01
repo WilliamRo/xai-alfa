@@ -1,5 +1,5 @@
 from tframe import DataSet
-from mtx.mtx_agent import MTXAgent
+from lll.lll_agent import LLLAgent
 
 import os
 
@@ -8,7 +8,7 @@ import os
 def load_data():
 
   # Load data
-  train_set, val_set, test_set = MTXAgent.load()
+  train_set, val_set, test_set = LLLAgent.load()
 
   assert isinstance(train_set, DataSet)
   assert isinstance(val_set, DataSet)

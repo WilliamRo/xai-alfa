@@ -1,5 +1,5 @@
-import mtx_core as core
-import mtx_mu as m
+import lll_core as core
+import lll_mu as m
 
 from tframe.enums import SaveMode
 from tframe import console
@@ -11,8 +11,8 @@ from tframe.utils.organizer.task_tools import update_job_dir
 # -----------------------------------------------------------------------------
 # Define model here
 # -----------------------------------------------------------------------------
-model_name = 'cnn'
-id = 9
+model_name = 'matt'
+id = 1
 def model():
   th = core.th
   model = m.get_container(flatten=False)
@@ -33,7 +33,7 @@ def model():
 
 
 def main(_):
-  console.start('{} on MTX task'.format(model_name.upper()))
+  console.start('{} on LLL task'.format(model_name.upper()))
 
   th = core.th
   th.rehearse = False

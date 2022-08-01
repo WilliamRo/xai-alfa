@@ -5,7 +5,7 @@ from roma import console
 
 
 
-class MTXConfig(SmartTrainerHub):
+class LLLConfig(SmartTrainerHub):
 
   class DataSets:
     MNIST = 'mnist'
@@ -13,5 +13,5 @@ class MTXConfig(SmartTrainerHub):
 
 
 # New hub class inherited from SmartTrainerHub must be registered
-MTXConfig.register()
+LLLConfig.register()
 

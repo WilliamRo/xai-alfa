@@ -1,7 +1,7 @@
 from tframe import Classifier
 from tframe import mu
 
-from mtx_core import th
+from lll_core import th
 
 
 
