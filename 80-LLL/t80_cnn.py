@@ -33,14 +33,14 @@ def model():
 
 
 def main(_):
-  console.start('{} on MTX task'.format(model_name.upper()))
+  console.start('{} on LLL task'.format(model_name.upper()))
 
   th = core.th
   th.rehearse = False
   # ---------------------------------------------------------------------------
   # 0. date set setup
   # ---------------------------------------------------------------------------
-  th.data_config = th.DataSets.MNIST
+  th.data_config = th.Tasks.MNIST
 
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
@@ -62,10 +62,10 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
-  th.epoch = 10
+  th.epoch = 2
   th.batch_size = 128
 
-  th.optimizer = 'sgd'
+  th.optimizer = 'adam'
   th.learning_rate = 0.003
   th.patience = 5
 
