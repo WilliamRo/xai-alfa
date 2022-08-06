@@ -21,6 +21,18 @@ class LLLAgent(object):
 
   @classmethod
   def load_XMNIST(cls):
+    """Load (F)MNIST dataset. Currently, only splitting for mod-1 is supported.
+
+    Setting format
+    --------------
+      th.data_config = 'w_1,w_2,...,w_n'
+      e.g.,
+      th.data_config = '2,1,1,1'
+
+    User obligation: sum_i(w_i) should divide 10000
+
+    Return: ((train_1, test_1), (train_2, test_2), ..., (train_N, test_N))
+    """
     from fmnist.fm_agent import FMNIST
     from tframe.data.images.mnist import MNIST
 
@@ -40,9 +52,19 @@ class LLLAgent(object):
     dataset = Agent.load_as_tframe_data(data_dir)
 
     # Split dataset according to setting
+    ws = [int(w) for w in th.data_config.split(',')]
+    assert 10000 % sum(ws) == 0
 
+    train_set, test_set = dataset.split(6000, 1000, over_classes=True)
 
-    return (dataset, )
+    rs = [w / sum(ws) for w in ws]
+    train_splits = [int(r * 6000) for r in rs]
+    test_splits = [int(r * 1000) for r in rs]
+
+    train_sets = train_set.split(*train_splits, over_classes=True)
+    test_sets = test_set.split(*test_splits, over_classes=True)
+
+    return list(zip(train_sets, test_sets))
 
   # endregion: Dataset-specific Methods
 
@@ -52,5 +74,7 @@ if __name__ == '__main__':
   from lll_core import th
 
   th.task = th.Tasks.FMNIST
+  th.data_config = '2,1,1,1'
 
   datasets = LLLAgent.load()
+  print()
