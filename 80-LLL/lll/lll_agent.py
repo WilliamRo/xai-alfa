@@ -1,6 +1,7 @@
 from tframe.data.augment.img_aug import image_augmentation_processor
 from tframe import DataSet
 from typing import Tuple
+from tframe.utils import misc
 
 import os
 
@@ -50,6 +51,8 @@ class LLLAgent(object):
 
     # Load whole dataset
     dataset = Agent.load_as_tframe_data(data_dir)
+    dataset.targets = misc.convert_to_one_hot(
+      dataset.targets, dataset[dataset.NUM_CLASSES])
 
     # Split dataset according to setting
     ws = [int(w) for w in th.data_config.split(',')]

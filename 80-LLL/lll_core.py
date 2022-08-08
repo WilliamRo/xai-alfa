@@ -52,17 +52,16 @@ th.validation_per_round = 2
 
 th.export_tensors_upon_validation = True
 
-th.evaluate_train_set = True
-th.evaluate_val_set = True
-th.evaluate_test_set = True
-
 th.val_batch_size = 100
 th.eval_batch_size = 100
 
 
 def activate():
   # Load data
-  train_set, val_set, test_set = du.load_data()
+  datasets = du.load_data()
+
+  train_set, val_set, _ = datasets[th.train_id]
+
   if th.centralize_data: th.data_mean = train_set.feature_mean
 
   # Build model
@@ -78,12 +77,17 @@ def activate():
 
   # Train or evaluate
   if th.train:
-    model.train(train_set, validation_set=val_set, test_set=test_set,
-                trainer_hub=th)
-  else:
-    # Evaluate on test set
-    model.evaluate_image_sets(train_set, val_set, test_set,
-                              visualize_last_false_set=True)
+    model.train(train_set, validation_set=val_set, trainer_hub=th)
+
+  # Evaluate on train sets
+  model.evaluate_image_sets(
+    *[ds for ds, _, _ in datasets],
+    show_class_detail=False, show_confusion_matrix=False)
+
+  # Evaluate on test sets
+  model.evaluate_image_sets(
+    *[ds for _, _, ds in datasets],
+    show_class_detail=False, show_confusion_matrix=False)
 
   # End
   model.shutdown()

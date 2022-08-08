@@ -40,8 +40,10 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 0. date set setup
   # ---------------------------------------------------------------------------
-  th.data_config = th.Tasks.MNIST
+  th.task = th.Tasks.FMNIST
 
+  th.data_config = '2,1,1,1'
+  th.train_id = 0
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
   # ---------------------------------------------------------------------------
@@ -62,7 +64,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
-  th.epoch = 2
+  th.epoch = 10000
   th.batch_size = 128
 
   th.optimizer = 'adam'
@@ -70,7 +72,8 @@ def main(_):
   th.patience = 5
 
   th.train = True
-  th.overwrite = True
+  th.overwrite = True if th.train_id == 0 else False
+  th.save_records = False
   th.save_mode = SaveMode.ON_RECORD
   th.print_cycle = 20
   # ---------------------------------------------------------------------------
