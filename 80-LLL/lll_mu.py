@@ -15,7 +15,8 @@ def get_container(flatten=False):
 
 def finalize(model):
   assert isinstance(model, Classifier)
-  model.add(mu.Dense(10, activation='softmax'))
+  model.add(mu.Dense(10))
+  model.add(mu.Activation('softmax'))
 
   # Build model
   model.build(batch_metric=['accuracy'])

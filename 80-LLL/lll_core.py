@@ -59,6 +59,8 @@ th.eval_batch_size = 100
 def activate():
   # Load data
   datasets = du.load_data()
+  train_sets = [ds for ds, _, _ in datasets]
+  test_sets = [ds for _, _, ds in datasets]
 
   train_set, val_set, _ = datasets[th.train_id]
 
@@ -76,18 +78,20 @@ def activate():
     return
 
   # Train or evaluate
+  th.additional_datasets_for_validation.extend(train_sets)
   if th.train:
     model.train(train_set, validation_set=val_set, trainer_hub=th)
 
+  # Load best model after training
+  model.agent.load()
+
   # Evaluate on train sets
   model.evaluate_image_sets(
-    *[ds for ds, _, _ in datasets],
-    show_class_detail=False, show_confusion_matrix=False)
+    *train_sets, show_class_detail=False, show_confusion_matrix=False)
 
   # Evaluate on test sets
   model.evaluate_image_sets(
-    *[ds for _, _, ds in datasets],
-    show_class_detail=False, show_confusion_matrix=False)
+    *test_sets, show_class_detail=False, show_confusion_matrix=False)
 
   # End
   model.shutdown()

@@ -17,6 +17,8 @@ class LLLConfig(SmartTrainerHub):
   train_id = Flag.integer(None, 'Who is training?', is_key=True)
   val_pct = Flag.float(0.1, '...', is_key=None)
 
+  trial_id = Flag.integer(0, '...', is_key=None)
+
   # region: Private Methods
 
   def sanity_check(self):
