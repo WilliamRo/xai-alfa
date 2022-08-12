@@ -8,9 +8,10 @@ import os
 def load_data():
   from lll_core import th
 
-  # Load data
+  # Load data. Agent returns [(train_1, test_1), ..., (train_n, test_n)]
   datasets: list = list(LLLAgent.load())
 
+  # Split train_sets as train_sets and val_sets
   for i, data_tuple in enumerate(datasets):
     train_set, test_set = data_tuple
     assert isinstance(train_set, DataSet)
@@ -23,6 +24,7 @@ def load_data():
 
     datasets[i] = (train_set, val_set, test_set)
 
+  # returns [(train_1, val_1, test_1), ..., (train_n, val_n test_n)]
   return datasets
 
 

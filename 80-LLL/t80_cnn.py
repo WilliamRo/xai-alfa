@@ -73,7 +73,6 @@ def main(_):
 
   th.train = True
   th.overwrite = True if th.train_id == 0 else False
-  th.save_records = False
   th.save_mode = SaveMode.ON_RECORD
   th.print_cycle = 20
   # ---------------------------------------------------------------------------

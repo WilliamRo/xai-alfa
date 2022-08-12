@@ -12,6 +12,7 @@ class LLLConfig(SmartTrainerHub):
   class Tasks(enum.Enum):
     MNIST = 'MNIST'
     FMNIST = 'FMNIST'
+    SLEEPEDF = 'SLEEPEDF'
 
   task = Flag.string(None, 'Task', is_key=True)
   train_id = Flag.integer(None, 'Who is training?', is_key=True)
@@ -22,8 +23,8 @@ class LLLConfig(SmartTrainerHub):
   # region: Private Methods
 
   def sanity_check(self):
-    pass
-    # assert self.task in self.Tasks.__members__
+    if not isinstance(self.task, str):
+      self.task = self.task.value
 
   # endregion: Private Methods
 

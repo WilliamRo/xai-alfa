@@ -44,6 +44,7 @@ th.gpu_memory_fraction = 0.40
 # -----------------------------------------------------------------------------
 # Set common trainer configs
 # -----------------------------------------------------------------------------
+th.save_records = False
 th.early_stop = True
 th.patience = 5
 
