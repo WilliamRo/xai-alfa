@@ -71,10 +71,12 @@ def main(_):
   th.learning_rate = 0.003
   th.patience = 5
 
+  th.validation_per_round = 2
+
   th.train = True
   th.overwrite = True if th.train_id == 0 else False
   th.save_mode = SaveMode.ON_RECORD
-  th.print_cycle = 20
+  th.print_cycle = 10
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------

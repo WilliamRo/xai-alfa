@@ -11,7 +11,7 @@ s.register_flags(type(th))
 # -----------------------------------------------------------------------------
 pass
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Specify summary file name and GPU ID here
 # -----------------------------------------------------------------------------
 summ_name = s.default_summ_name
@@ -28,7 +28,7 @@ s.register('epoch', 1000)
 s.register('patience', 5)
 
 s.register('data_config', '2,1,1,1')
-# s.register('trial_id', *range(1, 3))
+s.register('trial_id', 2)
 s.register('train_id', *range(4))
 
 s.run(rehearsal=False)
