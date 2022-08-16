@@ -27,8 +27,9 @@ s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
 
+s.register('trial_id', 1)
+
 s.register('data_config', '2,1,1,1')
-s.register('trial_id', 2)
 s.register('train_id', *range(4))
 
 s.run(rehearsal=False)

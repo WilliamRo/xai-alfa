@@ -52,6 +52,7 @@ th.print_cycle = 5
 th.validation_per_round = 2
 
 th.export_tensors_upon_validation = True
+th.epoch_as_step = False
 
 th.val_batch_size = 1000
 th.eval_batch_size = 1000
@@ -79,8 +80,7 @@ def activate():
     return
 
   # Train or evaluate
-  th.validate_train_set = True
-  # th.additional_datasets_for_validation.extend(train_sets)
+  th.additional_datasets_for_validation.extend(train_sets)
   if th.train:
     model.train(train_set, validation_set=val_set, trainer_hub=th)
 
