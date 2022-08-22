@@ -42,7 +42,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   th.task = th.Tasks.FMNIST
 
-  th.data_config = 'alpha:2,1,1,1'
+  th.data_config = 'beta:0.8'
   th.train_id = 0
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device

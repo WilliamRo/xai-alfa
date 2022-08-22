@@ -31,10 +31,10 @@ class LLLAgent(object):
     Setting format
     --------------
       (1) th.data_config = 'alpha:w_1,w_2,...,w_n'
-      (2) th.data_config = 'beta:'
+      (2) th.data_config = 'beta:a', here 0 < a < 1
       e.g.,
       th.data_config = 'alpha:2,1,1,1'
-      th.data_config = 'beta:'
+      th.data_config = 'beta:0.8'
 
     User obligation: sum_i(w_i) should divide 10000
 
@@ -70,6 +70,7 @@ class LLLAgent(object):
 
   @classmethod
   def _XMNIST_alpha(cls, dataset, arg_str: str):
+    """This method works only for FMNIST"""
     # Split dataset according to setting
     ws = [int(w) for w in arg_str.split(',')]
     assert 10000 % sum(ws) == 0
@@ -87,6 +88,12 @@ class LLLAgent(object):
 
   @classmethod
   def _XMNIST_beta(cls, dataset: DataSet, arg_str: str):
+    """Classes will be divided into 5 groups, namely, (0, 1), (2, 3), ...,
+    and (8, 9)
+    """
+
+
+
     return
 
   # endregion: [F]MNIST
