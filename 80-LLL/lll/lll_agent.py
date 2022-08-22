@@ -30,9 +30,11 @@ class LLLAgent(object):
 
     Setting format
     --------------
-      th.data_config = 'w_1,w_2,...,w_n'
+      (1) th.data_config = 'alpha:w_1,w_2,...,w_n'
+      (2) th.data_config = 'beta:'
       e.g.,
-      th.data_config = '2,1,1,1'
+      th.data_config = 'alpha:2,1,1,1'
+      th.data_config = 'beta:'
 
     User obligation: sum_i(w_i) should divide 10000
 
@@ -43,6 +45,10 @@ class LLLAgent(object):
 
     from lll_core import th
 
+    # Parse method and arg_str
+    method, arg_str = th.data_config.split(':')
+    assert method in ('alpha', 'beta')
+
     data_dir = th.data_dir
     if th.task is th.Tasks.FMNIST:
       # 7000 samples per class
@@ -50,6 +56,7 @@ class LLLAgent(object):
       data_dir = os.path.join(data_dir, 'fmnist')
     else:
       assert th.task is th.Tasks.MNIST
+      assert method != 'beta'
       Agent = MNIST
       data_dir = os.path.join(data_dir, 'mnist')
 
@@ -58,8 +65,13 @@ class LLLAgent(object):
     dataset.targets = misc.convert_to_one_hot(
       dataset.targets, dataset[dataset.NUM_CLASSES])
 
+    return {'alpha': cls._XMNIST_alpha,
+            'beta': cls._XMNIST_beta}[method](dataset, arg_str)
+
+  @classmethod
+  def _XMNIST_alpha(cls, dataset, arg_str: str):
     # Split dataset according to setting
-    ws = [int(w) for w in th.data_config.split(',')]
+    ws = [int(w) for w in arg_str.split(',')]
     assert 10000 % sum(ws) == 0
 
     train_set, test_set = dataset.split(6000, 1000, over_classes=True)
@@ -72,6 +84,10 @@ class LLLAgent(object):
     test_sets = test_set.split(*test_splits, over_classes=True)
 
     return list(zip(train_sets, test_sets))
+
+  @classmethod
+  def _XMNIST_beta(cls, dataset: DataSet, arg_str: str):
+    return
 
   # endregion: [F]MNIST
 
