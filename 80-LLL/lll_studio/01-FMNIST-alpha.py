@@ -15,7 +15,7 @@ note.scalar_dict: {key: scalar_array}
 note.step_array: numpy array
 
 """
-summ_path = r'E:\xai-alfa\80-LLL\09_cnn\0816_s80_cnn.sum'
+summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0816_s80_cnn.sum'
 trial_id = 1
 
 notes = Note.load(summ_path)

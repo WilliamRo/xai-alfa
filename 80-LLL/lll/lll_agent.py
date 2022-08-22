@@ -15,10 +15,14 @@ class LLLAgent(object):
 
     if th.task in (th.Tasks.FMNIST, th.Tasks.MNIST):
       return cls.load_XMNIST()
+    elif th.task == th.Tasks.SLEEPEDF:
+      return cls.load_SLEEPEDFX()
     else:
       raise KeyError(f'!! Unknown task {th.task}')
 
   # region: Dataset-specific Methods
+
+  # region: [F]MNIST
 
   @classmethod
   def load_XMNIST(cls):
@@ -68,6 +72,27 @@ class LLLAgent(object):
     test_sets = test_set.split(*test_splits, over_classes=True)
 
     return list(zip(train_sets, test_sets))
+
+  # endregion: [F]MNIST
+
+  # region: Sleep-EDFx
+
+  @classmethod
+  def load_SLEEPEDFX(cls):
+    from lll_core import th
+
+    from slp.slp_agent import SLPAgent
+    from slp.slp_datasets.sleepedfx import SleepEDFx
+
+    # Find 51-SLEEP/data/sleepedfx
+    data_dir = os.path.dirname(th.data_dir)   # 80-LLL
+    data_dir = os.path.dirname(data_dir)      # xai-alfa
+    data_dir = os.path.join(data_dir, '51-SLEEP', 'data', 'sleepedfx')
+
+    data_set: SleepEDFx = SLPAgent.load_as_tframe_data(data_dir, 'sleepedf')
+    return data_set.partition_lll()
+
+  # endregion: Sleep-EDFx
 
   # endregion: Dataset-specific Methods
 

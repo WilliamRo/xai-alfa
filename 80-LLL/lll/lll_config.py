@@ -30,8 +30,6 @@ class LLLConfig(SmartTrainerHub):
 
 
 
-
-
 # New hub class inherited from SmartTrainerHub must be registered
 LLLConfig.register()
 

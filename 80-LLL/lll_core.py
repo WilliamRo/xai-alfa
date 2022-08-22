@@ -57,11 +57,14 @@ th.epoch_as_step = False
 th.val_batch_size = 1000
 th.eval_batch_size = 1000
 
+th.evaluate_test_set = True
+
 
 def activate():
   # Load data
   datasets = du.load_data()
   train_sets = [ds for ds, _, _ in datasets]
+  val_sets = [ds for _, ds, _ in datasets]
   test_sets = [ds for _, _, ds in datasets]
 
   train_set, val_set, _ = datasets[th.train_id]
@@ -82,18 +85,20 @@ def activate():
   # Train or evaluate
   th.additional_datasets_for_validation.extend(train_sets)
   if th.train:
-    model.train(train_set, validation_set=val_set, trainer_hub=th)
+    model.train(train_set, validation_set=val_set,
+                test_set=test_sets[th.train_id], trainer_hub=th)
 
-  # Load best model after training
-  model.agent.load()
+  if th.task in (th.Tasks.FMNIST, th.Tasks.MNIST):
+    # Load best model after training
+    model.agent.load()
 
-  # Evaluate on train sets
-  model.evaluate_image_sets(
-    *train_sets, show_class_detail=False, show_confusion_matrix=False)
+    # Evaluate on train sets
+    model.evaluate_image_sets(
+      *train_sets, show_class_detail=False, show_confusion_matrix=False)
 
-  # Evaluate on test sets
-  model.evaluate_image_sets(
-    *test_sets, show_class_detail=False, show_confusion_matrix=False)
+    # Evaluate on test sets
+    model.evaluate_image_sets(
+      *test_sets, show_class_detail=False, show_confusion_matrix=False)
 
   # End
   model.shutdown()

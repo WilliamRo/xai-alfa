@@ -257,6 +257,21 @@ class SleepEDFx(SleepSet):
 
   # endregion: Preprocess
 
+  # region: Public Methods
+
+  def partition_lll(self):
+    """th.data_config examples:
+       (1) `95,1,1,1,1`
+
+    return [(train_1, val_1, test_1), (train_2, val_2, test_2), ...]
+    """
+    from lll_core import th
+
+
+    return None
+
+  # endregion: Public Methods
+
   # region: Overwriting
 
   def _check_data(self):
