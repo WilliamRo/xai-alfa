@@ -103,7 +103,7 @@ class LLLAgent(object):
     # Find 51-SLEEP/data/sleepedfx
     data_dir = os.path.dirname(th.data_dir)   # 80-LLL
     data_dir = os.path.dirname(data_dir)      # xai-alfa
-    data_dir = os.path.join(data_dir, '51-SLEEP', 'data', 'sleepedfx')
+    data_dir = os.path.join(data_dir, '51-SLEEP', 'data')
 
     data_set: SleepEDFx = SLPAgent.load_as_tframe_data(data_dir, 'sleepedf')
     return data_set.partition_lll()
