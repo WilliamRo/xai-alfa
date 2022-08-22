@@ -9,6 +9,8 @@ import numpy as np
 
 class SleepSet(SequenceSet):
 
+  STAGE_KEY = 'STAGE'
+
   # region: Properties
 
   @property
@@ -28,6 +30,9 @@ class SleepSet(SequenceSet):
     raise NotImplementedError
 
   def configure(self, config_string: str):
+    """
+    config_string examples: '0,2,6'
+    """
     raise NotImplementedError
 
   def report(self):
@@ -38,7 +43,16 @@ class SleepSet(SequenceSet):
   # region: Data IO
 
   @classmethod
-  def read_edf_file(cls, fn: str, channel_list: List[str] = None) -> List[DigitalSignal]:
+  def read_edf_file(cls, fn: str, channel_list: List[str] = None,
+                    freq_modifier=None) -> List[DigitalSignal]:
+    """Read .edf file using pyedflib package.
+
+    :param fn: file name
+    :param channel_list: list of channels. None by default.
+    :param freq_modifier: This arg is for datasets such as Sleep-EDF, in which
+                          frequency provided is incorrect.
+    :return: a list of DigitalSignals
+    """
     import pyedflib
 
     # Sanity check
@@ -54,6 +68,10 @@ class SleepSet(SequenceSet):
         # Get channel id
         chn = all_channels.index(channel_name)
         frequency = file.getSampleFrequency(chn)
+
+        # Apply freq_modifier if provided
+        if callable(freq_modifier): frequency = freq_modifier(frequency)
+
         # Initialize an item in signal_dict if necessary
         if frequency not in signal_dict: signal_dict[frequency] = []
         # Read signal
@@ -69,6 +87,31 @@ class SleepSet(SequenceSet):
         label=f'Freq=' f'{frequency}'))
 
     return digital_signals
+
+  @classmethod
+  def read_edf_anno_file_using_mne(cls, fn: str, allow_rename=True)-> list:
+    from mne import read_annotations
+
+    # Check extension
+    if fn[-3:] != 'edf':
+      if not allow_rename:
+        # Rename .rec file if necessary, since mne package works only for
+        # files with .rec extension
+        raise TypeError(f'!! extension of `{fn}` is not .edf')
+      os.rename(fn, fn + '.edf')
+      fn = fn + '.edf'
+
+    assert os.path.exists(fn)
+
+    stage_anno = []
+    raw_anno = read_annotations(fn)
+    anno = raw_anno.to_data_frame().values
+    anno_dura = anno[:, 1]
+    anno_desc = anno[:, 2]
+    for dura_num in range(len(anno_dura) - 1):
+      for stage_num in range(int(anno_dura[dura_num]) // 30):
+        stage_anno.append(anno_desc[dura_num])
+    return stage_anno
 
   @classmethod
   def read_edf_file_using_mne(cls, fn: str, channel_list: List[str],
@@ -103,7 +146,8 @@ class SleepSet(SequenceSet):
     from dsc_core import th
 
     # Set targets
-    if th.use_rnn: self.summ_dict[self.TARGETS] = np.expand_dims(
+    if th.use_rnn:
+      self.summ_dict[self.TARGETS] = np.expand_dims(
       self.data_dict.pop(self.TARGETS), 1)
 
 
