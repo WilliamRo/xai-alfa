@@ -43,6 +43,7 @@ def main(_):
   th.task = th.Tasks.FMNIST
 
   th.data_config = 'beta:0.8'
+  # th.data_config = 'alpha:2,1,1,1'
   th.train_id = 0
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
@@ -64,12 +65,12 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
-  th.epoch = 10
-  th.batch_size = 128
+  th.epoch = 100000
+  th.batch_size = 64
 
   th.optimizer = 'adam'
   th.learning_rate = 0.003
-  th.patience = 5
+  th.patience = 10
 
   th.validation_per_round = 2
 

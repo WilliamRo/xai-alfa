@@ -16,8 +16,7 @@ def load_data():
     for i, data_tuple in enumerate(datasets):
       train_set, test_set = data_tuple
       assert isinstance(train_set, DataSet)
-      train_set, val_set = train_set.split(
-        -1, int(th.val_pct * train_set.size / 10), over_classes=True)
+      train_set, val_set = train_set.split(9, 1, over_classes=True)
 
       train_set.name = f'Train-{i+1}'
       val_set.name = f'Val-{i+1}'

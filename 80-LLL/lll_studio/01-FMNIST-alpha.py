@@ -15,19 +15,20 @@ note.scalar_dict: {key: scalar_array}
 note.step_array: numpy array
 
 """
-summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0816_s80_cnn.sum'
-trial_id = 1
+summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0823_s80_cnn.sum'
+trial_id = 3
 
 notes = Note.load(summ_path)
 notes = [n for n in notes if n.configs['trial_id'] == trial_id]
 
-n_splits = len(notes[0].configs['data_config'].split(','))
+# n_splits = len(notes[0].configs['data_config'].split(','))
+n_splits = 5
 assert len(notes) == n_splits
 k = notes[0].configs['patience'] * 2
 # ----------------------------------------------------------------------
 #  Retrieve package
 # ----------------------------------------------------------------------
-acc_keys = [f'Train-{i+1} Accuracy' for i in range(4)]
+acc_keys = [f'Test-{i+1} Accuracy' for i in range(n_splits)]
 
 package = [[n.step_array] + [n.scalar_dict[k] for k in acc_keys] for n in notes]
 # ----------------------------------------------------------------------
@@ -61,14 +62,17 @@ def plotter(ax: plt.Axes):
       # Draw acc curve
       width = 2 if i == j else 1
       alpha = 1 if i == j else 0.7
-      ax.plot(x[:_k], acc[:_k], color=colors[i], linewidth=width, alpha=alpha)
+      label = f'Split-{i+1}' if i == j else None
+      ax.plot(x[:_k], acc[:_k], color=colors[i], linewidth=width, alpha=alpha,
+              label=label)
 
       # Record endpoints
       end_points[i] = (x[_k - 1], acc[_k - 1])
 
   # Set style
-  ax.legend([f'Split-{i+1}' for i in range(n_splits)])
-  ax.set_xlim([2, None])
+  # ax.legend([f'Split-{i+1}' for i in range(n_splits)])
+  ax.legend()
+  # ax.set_xlim([2, None])
 
 p = Pictor(figure_size=(10, 5))
 plotter = p.add_plotter(plotter)

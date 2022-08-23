@@ -1,3 +1,5 @@
+import numpy as np
+
 from tframe.data.augment.img_aug import image_augmentation_processor
 from tframe import DataSet
 from typing import Tuple
@@ -88,13 +90,48 @@ class LLLAgent(object):
 
   @classmethod
   def _XMNIST_beta(cls, dataset: DataSet, arg_str: str):
-    """Classes will be divided into 5 groups, namely, (0, 1), (2, 3), ...,
-    and (8, 9)
+    """Classes will be divided into 5 groups, namely,
+       (0, 1), (2, 3), (4, 5), (6, 7), and (8, 9).
+    In each group, samples of two corresponding classes account for p%
+    (e.g., 80%), and the rest eight classes account for (1-p)% uniformly.
     """
+    # Parse arg_str
+    p = float(arg_str)
 
+    # train_set.size = 60000, test_set.size = 10000
+    train_set, test_set = dataset.split(6000, 1000, over_classes=True)
 
+    # Deep-copy groups
+    train_groups = [g[:] for g in train_set.groups]
+    test_groups = [g[:] for g in test_set.groups]
 
-    return
+    # Split data
+    data_sets = []
+
+    for i in range(4):
+      major_classes = 2 * i, 2 * i + 1
+      sub_set = []
+      # For i = 0, 1, 2, 3
+      for ds, groups in zip((train_set, test_set), (train_groups, test_groups)):
+        n_major = int(np.round(p * ds.size / 5 / 2))
+        n_minor = int(np.round((1 - p) * ds.size / 5 / 8))
+
+        indices = []
+        for c in range(10):
+          n = n_major if c in major_classes else n_minor
+          indices.extend(groups[c][:n])
+          groups[c] = groups[c][n:]
+
+        sub_set.append(ds[indices])
+
+      # Append (train_i, test_i) to data_sets
+      data_sets.append(sub_set)
+
+    # Pack remains as last split
+    data_sets.append([train_set[np.concatenate(train_groups)],
+                      test_set[np.concatenate(test_groups)]])
+
+    return data_sets
 
   # endregion: [F]MNIST
 
@@ -125,7 +162,10 @@ if __name__ == '__main__':
   from lll_core import th
 
   th.task = th.Tasks.FMNIST
-  th.data_config = '2,1,1,1'
+  th.data_config = 'beta:0.8'
 
   datasets = LLLAgent.load()
-  print()
+
+  N = 0
+  for ds1, ds2 in datasets: N += ds1.size + ds2.size
+  print(N)

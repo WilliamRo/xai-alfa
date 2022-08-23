@@ -83,19 +83,14 @@ def activate():
     return
 
   # Train or evaluate
-  th.additional_datasets_for_validation.extend(train_sets)
+  th.additional_datasets_for_validation.extend(test_sets)
   if th.train:
     model.train(train_set, validation_set=val_set,
                 test_set=test_sets[th.train_id], trainer_hub=th)
 
-  if th.task in (th.Tasks.FMNIST, th.Tasks.MNIST):
+  if th.task in (th.Tasks.FMNIST.value, th.Tasks.MNIST.value):
     # Load best model after training
     model.agent.load()
-
-    # Evaluate on train sets
-    model.evaluate_image_sets(
-      *train_sets, show_class_detail=False, show_confusion_matrix=False)
-
     # Evaluate on test sets
     model.evaluate_image_sets(
       *test_sets, show_class_detail=False, show_confusion_matrix=False)

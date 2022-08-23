@@ -7,7 +7,7 @@ s = Helper()
 from lll_core import th
 s.register_flags(type(th))
 # -----------------------------------------------------------------------------
-# Configure data set here
+# Configure data set her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e
 # -----------------------------------------------------------------------------
 pass
 
@@ -27,9 +27,9 @@ s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
 
-s.register('trial_id', 1)
+s.register('trial_id', 3)
 
-s.register('data_config', '2,1,1,1')
-s.register('train_id', *range(4))
+s.register('data_config', 'beta:0.8')
+s.register('train_id', *range(5))
 
 s.run(rehearsal=False)
