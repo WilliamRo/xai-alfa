@@ -8,7 +8,7 @@ from lll_core import th
 
 def get_container(flatten=False):
   model = Classifier(mark=th.mark)
-  model.add(mu.Input(sample_shape=[28, 28, 1]))
+  model.add(mu.Input(sample_shape=th.input_shape))
   if th.centralize_data: model.add(mu.Normalize(mu=th.data_mean))
   if flatten: model.add(mu.Flatten())
   return model
@@ -18,7 +18,7 @@ def finalize(model):
   from tframe import context
 
   assert isinstance(model, Classifier)
-  model.add(mu.Dense(10))
+  model.add(mu.Dense(th.output_dim))
   model.add(mu.Activation('softmax'))
 
   # Build model
@@ -46,7 +46,7 @@ def reg_alpha(model: Classifier):
   loss_list = []
   for v in vars:
     s = shadows[v]
-    loss_list.append(tf.reduce_mean(tf.abs(s - v)))
+    loss_list.append(tf.reduce_mean(tf.square(s - v)))
   return loss_list
 
 # endregion: Regularizers
