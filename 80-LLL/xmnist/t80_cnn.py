@@ -44,7 +44,7 @@ def main(_):
 
   th.data_config = 'beta:0.8'
   # th.data_config = 'alpha:2,1,1,1'
-  th.train_id = 0
+  th.train_id = 1
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
   # ---------------------------------------------------------------------------
@@ -78,6 +78,15 @@ def main(_):
   th.overwrite = True if th.train_id == 0 else False
   th.save_mode = SaveMode.ON_RECORD
   th.print_cycle = 10
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # LLL setups
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  th.lll_lambda = 0. if th.train_id == 0 else 0.5
+  th.create_shadow_vars = True
+  th.save_shadow_vars = True
+
+  th.show_extra_loss_info = True
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------

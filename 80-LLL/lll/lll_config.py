@@ -20,6 +20,9 @@ class LLLConfig(SmartTrainerHub):
 
   trial_id = Flag.integer(0, '...', is_key=None)
 
+  lll_lambda = Flag.float(0.0, '...', is_key=None)
+  reg_code = Flag.string('alpha', '...', is_key=None)
+
   # region: Private Methods
 
   def sanity_check(self):
