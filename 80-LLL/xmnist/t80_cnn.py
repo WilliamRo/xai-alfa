@@ -41,6 +41,8 @@ def main(_):
   # 0. date set setup
   # ---------------------------------------------------------------------------
   th.task = th.Tasks.FMNIST
+  th.input_shape = [28, 28, 1]
+  th.output_dim = 10
 
   th.data_config = 'beta:0.8'
   # th.data_config = 'alpha:2,1,1,1'
