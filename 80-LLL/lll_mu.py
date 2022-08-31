@@ -34,6 +34,7 @@ def add_customized_loss_f_net(model: Classifier):
 
   loss_list = {
     'alpha': reg_alpha,
+    'si': reg_si,
   }[th.reg_code](model)
 
   return [tf.multiply(th.lll_lambda, tf.add_n(loss_list), name='reg-alpha')]
@@ -47,6 +48,10 @@ def reg_alpha(model: Classifier):
   for v in vars:
     s = shadows[v]
     loss_list.append(tf.reduce_mean(tf.square(s - v)))
+  return loss_list
+
+def reg_si(model: Classifier):
+  loss_list = []
   return loss_list
 
 # endregion: Regularizers
