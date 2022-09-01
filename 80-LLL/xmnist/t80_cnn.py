@@ -84,11 +84,10 @@ def main(_):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # LLL setups
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  th.lll_lambda = 0. if th.train_id == 0 else 0.5
+  th.cl_reg_config = 'l2'
+  th.cl_reg_lambda = 0. if th.train_id == 0 else 0.5
   th.create_shadow_vars = True
-  th.save_shadow_vars = True
 
-  th.show_extra_loss_info = True
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------

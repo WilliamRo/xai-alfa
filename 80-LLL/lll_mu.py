@@ -22,38 +22,46 @@ def finalize(model):
   model.add(mu.Activation('softmax'))
 
   # Build model
-  context.customized_loss_f_net = add_customized_loss_f_net
+  # context.customized_loss_f_net = add_customized_loss_f_net
   model.build(batch_metric=['accuracy'])
   return model
 
 
 # region: Regularizers
-
-def add_customized_loss_f_net(model: Classifier):
-  if th.lll_lambda == 0.: return []
-
-  loss_list = {
-    'alpha': reg_alpha,
-    'si': reg_si,
-  }[th.reg_code](model)
-
-  return [tf.multiply(th.lll_lambda, tf.add_n(loss_list), name='reg-alpha')]
-
-def reg_alpha(model: Classifier):
-  vars = model.var_list
-  shadows = model._shadows
-  assert len(vars) == len(shadows)
-
-  loss_list = []
-  for v in vars:
-    s = shadows[v]
-    loss_list.append(tf.reduce_mean(tf.square(s - v)))
-  return loss_list
-
-def reg_si(model: Classifier):
-  loss_list = []
-  return loss_list
-
+#
+# def add_customized_loss_f_net(model: Classifier):
+#   if th.lll_lambda == 0.: return []
+#
+#   loss_list = {
+#     'alpha': reg_alpha,
+#     'si': reg_si,
+#   }[th.reg_code](model)
+#
+#   return [tf.multiply(th.lll_lambda, tf.add_n(loss_list), name='reg-alpha')]
+#
+# def reg_alpha(model: Classifier):
+#   vars = model.var_list
+#   shadows = model.shadows
+#   assert len(vars) == len(shadows)
+#
+#   loss_list = []
+#   for v in vars:
+#     s = shadows[v]
+#     loss_list.append(tf.reduce_mean(tf.square(s - v)))
+#   return loss_list
+#
+# def reg_si(model: Classifier):
+#   vars = model.var_list
+#   shadows = model.shadows
+#   assert len(vars) == len(shadows)
+#
+#   loss_list = []
+#   for v in vars:
+#     s = shadows[v]
+#     reg = tf.reduce_mean(tf.square(s - v))
+#     loss_list.append(reg)
+#   return loss_list
+#
 # endregion: Regularizers
 
 
