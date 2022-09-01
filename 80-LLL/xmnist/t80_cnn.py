@@ -86,7 +86,6 @@ def main(_):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   th.cl_reg_config = 'l2'
   th.cl_reg_lambda = 0. if th.train_id == 0 else 0.5
-  th.create_shadow_vars = True
 
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
