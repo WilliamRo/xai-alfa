@@ -15,8 +15,8 @@ note.scalar_dict: {key: scalar_array}
 note.step_array: numpy array
 
 """
-summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0830_s80_cnn.sum'
-trial_id = 5
+summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0901_s80_cnn.sum'
+trial_id = 2
 
 notes = Note.load(summ_path)
 notes = [n for n in notes if n.configs['trial_id'] == trial_id]
