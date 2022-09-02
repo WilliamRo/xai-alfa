@@ -85,7 +85,7 @@ def main(_):
   # LLL setups
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   th.cl_reg_config = 'l2'
-  th.cl_reg_lambda = 0. if th.train_id == 0 else 0.5
+  th.cl_reg_lambda = 1.0
 
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate

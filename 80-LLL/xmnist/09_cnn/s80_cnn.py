@@ -27,11 +27,10 @@ s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
 
-s.register('trial_id', 3)
+s.register('trial_id', 20)
 
-s.register('cl_reg_config', 'l2')
-s.register('cl_reg_lambda', 10000000)
-s.constrain({'train_id': 0}, {'cl_reg_lambda': 0})
+s.register('cl_reg_config', 'si')
+s.register('cl_reg_lambda', 0.5)
 
 s.register('data_config', 'beta:0.8')
 s.register('train_id', *range(5))
