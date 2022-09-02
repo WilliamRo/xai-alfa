@@ -1,10 +1,11 @@
 import numpy as np
+import pickle
 
 from tframe.data.augment.img_aug import image_augmentation_processor
 from tframe import DataSet
 from typing import Tuple
 from tframe.utils import misc
-
+from tframe import console
 import os
 
 
@@ -149,8 +150,21 @@ class LLLAgent(object):
     data_dir = os.path.dirname(data_dir)      # xai-alfa
     data_dir = os.path.join(data_dir, '51-SLEEP', 'data')
 
-    data_set: SleepEDFx = SLPAgent.load_as_tframe_data(data_dir, 'sleepedf')
-    return data_set.partition_lll()
+    data_name = 'sleepedf-lll'
+    first_k = sum([int(i) for i in th.data_config.split(',')])
+    suffix = '-alpha'
+    suffix_k = '' if first_k is None else f'({first_k})'
+    tfd_preprocess_path = os.path.join(data_dir, data_name, f'{data_name}{suffix_k}{suffix}-pro.tfds')
+    if os.path.exists(tfd_preprocess_path):
+      with open(tfd_preprocess_path,'rb') as input_:
+        console.show_status('Loading `{}` ...'.format(tfd_preprocess_path))
+        return pickle.load(input_)
+
+    data_set: SleepEDFx = SLPAgent.load_as_tframe_data(data_dir,
+                                                       data_name=data_name,
+                                                       first_k=first_k,
+                                                       suffix=suffix)
+    return data_set.partition_lll(tfd_preprocess_path)
 
   # endregion: Sleep-EDFx
 

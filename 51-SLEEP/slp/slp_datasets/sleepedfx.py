@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import pandas as pd
+import pickle
 
 from pictor.objects.signals.signal_group import DigitalSignal, SignalGroup
 
@@ -11,6 +12,7 @@ from roma import io
 from slp.slp_set import SleepSet
 from typing import List
 
+from tframe import DataSet
 
 
 class SleepEDFx(SleepSet):
@@ -62,8 +64,8 @@ class SleepEDFx(SleepSet):
     """
     suffix_k = '' if first_k is None else f'({first_k})'
 
-    data_dir = os.path.join(data_dir, 'sleepedf')
-    tfd_path = os.path.join(data_dir, f'sleepedf{suffix_k}{suffix}.tfds')
+    data_dir = os.path.join(data_dir, 'sleepedf-lll')
+    tfd_path = os.path.join(data_dir, f'sleepedf-lll{suffix_k}{suffix}.tfds')
 
     # Load .tfd file directly if it exists
     if os.path.exists(tfd_path): return cls.load(tfd_path)
@@ -77,10 +79,12 @@ class SleepEDFx(SleepSet):
       data_set = SleepEDFx(name=f'Sleep-EDF-Expanded{suffix_k}',
                            signal_groups=signal_groups)
     elif suffix == '-alpha':
-      data_set: SleepEDFx = cls.load_as_tframe_data(os.path.dirname(data_dir))
+      data_set: SleepEDFx = cls.load_as_tframe_data(os.path.dirname(data_dir), first_k)
       data_set.remove_wake_signal(config='terry')
     else: raise KeyError(f'!! Unknown suffix `{suffix}`')
 
+    data_set.save(tfd_path)
+    console.show_status(f'Dataset saved to `{tfd_path}`')
     # Save and return
     # io.save_file(data_set, tfd_path, verbose=True)
     return data_set
@@ -108,7 +112,7 @@ class SleepEDFx(SleepSet):
     hypnogram_file_list: List[str] = walk(data_dir, 'file', '*Hypnogram*')
     if first_k is not None: hypnogram_file_list = hypnogram_file_list[:first_k]
     N = len(hypnogram_file_list)
-
+    print("patient_num:", N)
     # Read records in order
     for i, hypnogram_file in enumerate(hypnogram_file_list):
       # Get id
@@ -171,6 +175,7 @@ class SleepEDFx(SleepSet):
     """TODO:
     config_string examples: '0,2,6'
     """
+    console.show_status(f'configure data...')
     def data_preprocess(data):
       import numpy as np
       from scipy import signal
@@ -213,6 +218,7 @@ class SleepEDFx(SleepSet):
       sg_data = np.stack([data_preprocess(sg[name]) for name in chn_names], axis=-1)
       sg_annotation = sg.annotations[self.STAGE_KEY].annotations
       sg_data, sg_annotation = data_reshape(sg_data, sg_annotation)
+
       features.append(sg_data)
       targets.append(sg_annotation)
       # Convert to one-hot if necessary
@@ -221,6 +227,7 @@ class SleepEDFx(SleepSet):
     self.features = features
     # targets[i].shape = [L_i, n_classes]
     self.targets = targets
+    console.show_status(f'Finishing configure data...')
 
 
   def report(self):
@@ -259,7 +266,8 @@ class SleepEDFx(SleepSet):
 
   # region: Public Methods
 
-  def partition_lll(self):
+
+  def partition_lll(self, file_name):
     """th.data_config examples:
        (1) `95,1,1,1,1`
 
@@ -267,8 +275,57 @@ class SleepEDFx(SleepSet):
     """
     from lll_core import th
 
+    def split_and_return(index, data_set, over_classes=True, random=True):
+      from tframe.data.dataset import DataSet
+      # assert isinstance(data_set, DataSet)
+      if index == 0:
+        train_ratio = 8.3
+        val_ratio = 1
+        test_ratio = 0.7
+      else:
+        train_ratio = 7
+        val_ratio = 1
+        test_ratio = 2
 
-    return None
+      names = [f'Train-{index+1}', f'Val-{index+1}', f'Test-{index+1}']
+      data_sets = data_set.split(train_ratio,val_ratio,test_ratio,
+                                 random=random,
+                                 over_classes=over_classes,
+                                 names=names)
+      # Show data info
+      # cls._show_data_sets_info(data_sets)
+      return data_sets
+
+    self.configure('0,1,2')
+    index = 0
+    datasets = []
+    #split sleepedfx to (p1, p2, ...)
+    for order, num in enumerate(th.data_config.split(',')):
+      features = (np.vstack(self.features[index:index+int(num)]))
+      targets = (np.vstack(self.targets[index:index+int(num)]))
+      datasets.append(DataSet(features=features, targets=targets,
+                              name=f'dataset-{order}'))
+      # datasets.append(SleepEDFx(features=features, targets=targets,
+      #                           name=f'data{order}',
+      #                           signal_groups=self.signal_groups[index:index+int(num)]))
+      index = index + int(num)
+    for ds in datasets:
+      ds.properties[self.NUM_CLASSES] = 5
+    # split px to (train, val, test)
+    for index, dataset in enumerate(datasets):
+      assert isinstance(dataset, DataSet)
+      train_ratio = 7
+      val_ratio = 1
+      test_ratio = 2
+      train_set, val_set, test_set = split_and_return(index, dataset)
+      datasets[index] = (train_set, val_set, test_set)
+
+    with open(file_name, 'wb') as output_:
+     console.show_status(f'Saving {file_name}...')
+     pickle.dump(datasets, output_, pickle.HIGHEST_PROTOCOL)
+
+    console.show_status('Finishing split dataset to [(train1, val1, test1),(train2, val2, test2)]...')
+    return datasets
 
   # endregion: Public Methods
 
@@ -276,7 +333,8 @@ class SleepEDFx(SleepSet):
 
   def _check_data(self):
     """This method will be called during splitting dataset"""
-    assert len(self.signal_groups) > 0
+    # assert len(self.signal_groups) > 0
+    pass
 
   # endregion: Overwriting
 
@@ -313,8 +371,9 @@ if __name__ == '__main__':
   from slp_core import th
   from slp.slp_agent import SLPAgent
 
-  th.data_config = 'sleepedf'
+  # th.data_config = 'sleepedf'
 
+  th.data_config = '35,1,1,1,1,1'
   # _ = UCDDB.load_raw_data(th.data_dir, save_xai_rec=True, overwrite=False)
 
   # SLEEPEDF.load_raw_data(os.path.join(th.data_dir, 'sleepedf'), overwrite=True)
