@@ -26,11 +26,12 @@ s.register('allow_growth', False)
 s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
+s.register('lr', 0.001)
 
-s.register('trial_id', 20)
+s.register('trial_id', 1)
 
-s.register('cl_reg_config', 'si')
-s.register('cl_reg_lambda', 0.5)
+s.register('cl_reg_config', 'moses')
+s.register('cl_reg_lambda', 1.0)
 
 s.register('data_config', 'beta:0.8')
 s.register('train_id', *range(5))

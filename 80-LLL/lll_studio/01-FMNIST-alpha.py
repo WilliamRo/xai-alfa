@@ -16,7 +16,7 @@ note.step_array: numpy array
 
 """
 summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0902_s80_cnn.sum'
-trial_id = 20
+trial_id = 32
 
 notes = Note.load(summ_path)
 notes = [n for n in notes if n.configs['trial_id'] == trial_id]
@@ -62,7 +62,7 @@ def plotter(ax: plt.Axes):
       # Draw acc curve
       width = 2 if i == j else 1
       alpha = 1 if i == j else 0.7
-      label = f'Split-{i+1}' if i == j else None
+      label = f'Task-{i+1}' if i == j else None
       ax.plot(x[:_k], acc[:_k], color=colors[i], linewidth=width, alpha=alpha,
               label=label)
 
