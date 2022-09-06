@@ -46,7 +46,7 @@ def main(_):
 
   th.data_config = 'beta:0.8'
   # th.data_config = 'alpha:2,1,1,1'
-  th.train_id = 1
+  th.train_id = 0
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
   # ---------------------------------------------------------------------------
@@ -72,7 +72,7 @@ def main(_):
 
   th.optimizer = 'adam'
   th.learning_rate = 0.003
-  th.patience = 10
+  th.patience = 5
 
   th.validation_per_round = 2
 
@@ -84,9 +84,10 @@ def main(_):
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # LLL setups
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  th.cl_reg_config = 'l2'
+  th.cl_reg_config = 'moses'
   th.cl_reg_lambda = 1.0
 
+  th.export_tensors_to_note = True
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------

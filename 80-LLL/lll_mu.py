@@ -27,4 +27,5 @@ def finalize(model):
   # context.customized_loss_f_net = add_customized_loss_f_net
   model.build(batch_metric=['accuracy'])
   return model
+  tf.matmul
 

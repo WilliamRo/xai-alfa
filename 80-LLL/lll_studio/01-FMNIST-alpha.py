@@ -15,8 +15,9 @@ note.scalar_dict: {key: scalar_array}
 note.step_array: numpy array
 
 """
-summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0902_s80_cnn.sum'
-trial_id = 32
+summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0905_s80_cnn.sum'
+summ_path = r'E:\xai-alfa\80-LLL\xmnist\08_mlp\0906_s80_mlp.sum'
+trial_id = 4
 
 notes = Note.load(summ_path)
 notes = [n for n in notes if n.configs['trial_id'] == trial_id]
@@ -24,13 +25,21 @@ notes = [n for n in notes if n.configs['trial_id'] == trial_id]
 # n_splits = len(notes[0].configs['data_config'].split(','))
 n_splits = 5
 assert len(notes) == n_splits
-k = notes[0].configs['patience'] * 2
+patience = notes[0].configs['patience']
+k = patience * 2
 # ----------------------------------------------------------------------
 #  Retrieve package
 # ----------------------------------------------------------------------
 acc_keys = [f'Test-{i+1} Accuracy' for i in range(n_splits)]
 
 package = [[n.step_array] + [n.scalar_dict[k] for k in acc_keys] for n in notes]
+
+
+# Show average accuracy
+index = np.argmax(notes[-1].scalar_dict['Val-5 Accuracy'])
+avg_acc = np.average([array[index] for array in package[-1][1:]])
+print(f'>> Average Accuracy = {avg_acc*100:.2f}')
+
 # ----------------------------------------------------------------------
 #  Show in Pictor
 # ----------------------------------------------------------------------
@@ -73,6 +82,7 @@ def plotter(ax: plt.Axes):
   # ax.legend([f'Split-{i+1}' for i in range(n_splits)])
   ax.legend()
   # ax.set_xlim([2, None])
+  ax.set_title(f'Trial {trial_id}, Avg-Acc = {avg_acc * 100:.2f}')
 
 p = Pictor(figure_size=(10, 5))
 plotter = p.add_plotter(plotter)

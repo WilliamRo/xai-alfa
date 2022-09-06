@@ -67,6 +67,8 @@ def activate():
   val_sets = [ds for _, ds, _ in datasets]
   test_sets = [ds for _, _, ds in datasets]
 
+  if 'test_set' in th.depot: test_sets.append(th.depot['test_set'])
+
   train_set, val_set, _ = datasets[th.train_id]
 
   if th.centralize_data: th.data_mean = train_set.feature_mean
@@ -85,7 +87,7 @@ def activate():
   # Train or evaluate
   th.additional_datasets_for_validation.extend(test_sets)
   if th.train:
-    model.train(train_set, validation_set=val_set,
+    model.train(train_set, validation_set=val_set, probe=th.probe_func,
                 test_set=test_sets[th.train_id], trainer_hub=th)
 
   if th.task in (th.Tasks.FMNIST.value, th.Tasks.MNIST.value):

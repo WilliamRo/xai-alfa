@@ -20,6 +20,10 @@ class Moses(SpringBase):
     th.monitor_weight_grads = True
     th.monitor_weight_history = True
 
+    # th.probe_func = self.probe
+    if th.export_tensors_to_note:
+      th.customized_tensors_to_export = self.get_tensors_to_export
+
     self.epsilon = 1e-3
 
   # region: Properties
@@ -82,8 +86,19 @@ class Moses(SpringBase):
 
   # endregion: Implementation of Abstract Methods
 
+  # region: Exporting Tensors
+
+  def get_tensors_to_export(self):
+    """This method will be called in trainer._get_tensors_to_export"""
+    val = np.concatenate([
+      np.ravel(w) for w in self.importance_estimates.values()])
+    return {'W-distribution': val}
+
+  # endregion: Exporting Tensors
+
 
 context.depot['moses'] = Moses
+context.depot['mo'] = Moses
 
 
 

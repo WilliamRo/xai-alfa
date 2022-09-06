@@ -59,7 +59,7 @@ class LLLAgent(object):
       data_dir = os.path.join(data_dir, 'fmnist')
     else:
       assert th.task is th.Tasks.MNIST
-      assert method != 'beta'
+      # assert method != 'beta'
       Agent = MNIST
       data_dir = os.path.join(data_dir, 'mnist')
 
@@ -102,6 +102,11 @@ class LLLAgent(object):
     # train_set.size = 60000, test_set.size = 10000
     train_set, test_set = dataset.split(6000, 1000, over_classes=True)
 
+    # Put whole test set into depot
+    from lll_core import th
+    test_set.name = 'Test-*'
+    th.depot['test_set'] = test_set
+
     # Deep-copy groups
     train_groups = [g[:] for g in train_set.groups]
     test_groups = [g[:] for g in test_set.groups]
@@ -129,8 +134,8 @@ class LLLAgent(object):
       data_sets.append(sub_set)
 
     # Pack remains as last split
-    data_sets.append([train_set[np.concatenate(train_groups)],
-                      test_set[np.concatenate(test_groups)]])
+    data_sets.append([train_set[np.concatenate(train_groups).astype(np.int)],
+                      test_set[np.concatenate(test_groups).astype(np.int)]])
 
     return data_sets
 

@@ -10,6 +10,8 @@ for _ in range(DIR_DEPTH + 1):
 from tframe.utils.summary_viewer import main_frame
 from tframe import local
 
+from tframe.utils.tensor_viewer.plugins import distribution
+
 
 current_dir = os.path.dirname(FILE_PATH)
 if len(sys.argv) == 2:
@@ -56,6 +58,7 @@ while True:
       default_inactive_criteria=default_inactive_criteria,
       flags_to_ignore=flags_to_ignore,
     )
+    viewer.register_plugin(distribution.plugin)
     viewer.show()
 
   except Exception as e:
