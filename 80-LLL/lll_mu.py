@@ -5,6 +5,8 @@ from tframe import tf
 from lll_core import th
 
 import lll.springs.moses
+import lll.springs.david
+import lll.springs.matt
 
 
 
@@ -20,7 +22,7 @@ def finalize(model):
   from tframe import context
 
   assert isinstance(model, Classifier)
-  model.add(mu.Dense(th.output_dim))
+  model.add(mu.Dense(th.output_dim, use_bias=False))
   model.add(mu.Activation('softmax'))
 
   # Build model

@@ -24,8 +24,9 @@ def model():
 
     c = int(c)
     model.add(m.mu.Conv2D(
-      filters=c, kernel_size=th.kernel_size,
+      filters=c, kernel_size=th.kernel_size, use_bias=False,
       activation=th.activation, use_batchnorm=th.use_batchnorm and i > 0))
+    if th.dropout > 0: model.add(m.mu.Dropout(1 - th.dropout))
 
   # Add flatten layer
   model.add(m.mu.Flatten())
@@ -68,7 +69,7 @@ def main(_):
   # 3. trainer setup
   # ---------------------------------------------------------------------------
   th.epoch = 100000
-  th.batch_size = 64
+  th.batch_size = 128
 
   th.optimizer = 'adam'
   th.learning_rate = 0.003
@@ -88,6 +89,7 @@ def main(_):
   th.cl_reg_lambda = 1.0
 
   th.export_tensors_to_note = True
+  th.developer_code = ''
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------

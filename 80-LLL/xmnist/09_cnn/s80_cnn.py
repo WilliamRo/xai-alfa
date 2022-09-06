@@ -26,15 +26,18 @@ s.register('allow_growth', False)
 s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
-s.register('lr', 0.001)
 
-s.register('trial_id', 7)
+s.register('trial_id', 1)
+s.register('developer_code', 'dp0.5')
 
-s.register('cl_reg_config', 'mo')
-# s.register('cl_reg_config', 'l2')
-s.register('cl_reg_lambda', 1.)
+s.register('cl_reg_config', 'l2')
+s.register('cl_reg_lambda', 0)
+s.register('dropout', 0.5)
 
 s.register('data_config', 'beta:0.8')
 s.register('train_id', *range(5))
+
+s.register('lr', 0.001)
+s.register('batch_size', 128)
 
 s.run(rehearsal=False)

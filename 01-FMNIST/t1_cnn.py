@@ -18,12 +18,12 @@ def model():
 
   for i, c in enumerate(core.th.archi_string.split('-')):
     if c == 'p':
-      model.add(m.mu.MaxPool2D(pool_size=2, strides=1))
+      model.add(m.mu.MaxPool2D(pool_size=2, strides=2))
       continue
 
     c = int(c)
     model.add(m.mu.Conv2D(
-      filters=c, kernel_size=th.kernel_size,
+      filters=c, kernel_size=th.kernel_size, use_bias=False,
       activation=th.activation, use_batchnorm=th.use_batchnorm and i > 0))
 
   # Add flatten layer
@@ -48,7 +48,7 @@ def main(_):
   summ_name = model_name
   th.prefix = '{}_'.format(date_string())
 
-  th.visible_gpu_id = 0
+  th.visible_gpu_id = 1
   # ---------------------------------------------------------------------------
   # 2. model setup
   # ---------------------------------------------------------------------------
@@ -61,11 +61,11 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
-  th.epoch = 1000
+  th.epoch = 100000
   th.batch_size = 128
 
   th.optimizer = 'adam'
-  th.learning_rate = 0.0003
+  th.learning_rate = 0.003
 
   th.train = True
   th.overwrite = True
