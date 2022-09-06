@@ -79,7 +79,12 @@ class Bamboo(Plotter):
     # ax.legend([f'Split-{i+1}' for i in range(n_splits)])
     ax.legend()
     # ax.set_xlim([2, None])
-    ax.set_title(f'Trial {id}, Avg-Acc = {avg_acc * 100:.2f}')
+    config, lambd = [notes[0].configs[k]
+                     for k in ('cl_reg_config', 'cl_reg_lambda')]
+    title = f'[T-{id}]'
+    title += f' {config}($\lambda$={lambd})'
+    title += f', avg(acc)={avg_acc * 100:.2f}'
+    ax.set_title(title)
 
   # region: Public Methods
 
