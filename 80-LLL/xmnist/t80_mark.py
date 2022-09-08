@@ -70,7 +70,7 @@ def main(_):
   th.epoch = 100000
   th.batch_size = 128
 
-  th.balance_classes = True
+  th.balance_classes = False
 
   th.optimizer = 'adam'
   th.learning_rate = 0.003

@@ -141,6 +141,7 @@ if __name__ == '__main__':
   # summ_path = r'E:\xai-alfa\80-LLL\xmnist\08_mlp\0906_s80_mlp.sum'
   summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0908_s80_cnn.sum'
   # summ_path = r'E:\xai-alfa\80-LLL\xmnist\01_matt\0907_s80_matt.sum'
+  summ_path = r'E:\xai-alfa\80-LLL\xmnist\02_mark\0908_s80_mark.sum'
 
   p = Pictor(figure_size=(10, 5))
   bb = Bamboo(p)
