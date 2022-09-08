@@ -22,12 +22,11 @@ def finalize(model):
   from tframe import context
 
   assert isinstance(model, Classifier)
-  model.add(mu.Dense(th.output_dim, use_bias=False))
+  model.add(mu.Dense(th.output_dim, use_bias=False, prune_frac=0.5))
   model.add(mu.Activation('softmax'))
 
   # Build model
   # context.customized_loss_f_net = add_customized_loss_f_net
   model.build(batch_metric=['accuracy'])
   return model
-  tf.matmul
 

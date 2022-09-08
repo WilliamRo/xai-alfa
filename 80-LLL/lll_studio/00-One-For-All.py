@@ -5,7 +5,7 @@ from pictor.plotters.plotter_base import Plotter
 
 import os
 import numpy as np
-import console
+from roma import console
 import matplotlib.pyplot as plt
 
 
@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 class Bamboo(Plotter):
 
   N_SPLITS = 5
-  GROUP_KEYS = ('cl_reg_config', 'cl_reg_lambda', 'trial_id', 'developer_code')
+  GROUP_KEYS = ('cl_reg_config', 'cl_reg_lambda', 'trial_id', 'developer_code',
+                'balance_classes')
 
   def __init__(self, pictor=None):
     super(Bamboo, self).__init__(self.draw_bamboo, pictor)
@@ -84,12 +85,14 @@ class Bamboo(Plotter):
     # ax.set_xlim([2, None])
 
     if self.get('title'):
-      config, lambd, code = [
+      config, lambd, code, bc = [
         notes[0].configs[k] for k in (
-          'cl_reg_config', 'cl_reg_lambda', 'developer_code')]
+          'cl_reg_config', 'cl_reg_lambda', 'developer_code',
+          'balance_classes')]
       title = f'[T-{id}]'
       title += f' {config} ($\lambda$={lambd})'
       title += f', avg(acc)={avg_acc * 100:.2f}'
+      title += f', {"n" if not bc else ""}bc'
       title += f' - {code}'
       ax.set_title(title)
 
@@ -135,8 +138,9 @@ class Bamboo(Plotter):
 
 
 if __name__ == '__main__':
-  summ_path = r'E:\xai-alfa\80-LLL\xmnist\08_mlp\0906_s80_mlp.sum'
-  summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0906_s80_cnn.sum'
+  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\08_mlp\0906_s80_mlp.sum'
+  summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0908_s80_cnn.sum'
+  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\01_matt\0907_s80_matt.sum'
 
   p = Pictor(figure_size=(10, 5))
   bb = Bamboo(p)

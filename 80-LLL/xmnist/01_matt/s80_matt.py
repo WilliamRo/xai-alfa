@@ -27,16 +27,15 @@ s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
 
-s.register('cl_reg_lambda', 0, 1, 10, 100)
-s.register('balance_classes', s.true_and_false)
+s.register('trial_id', 1)
+s.register('developer_code', 'alpha')
 
-s.register('trial_id', *range(10))
-s.register('developer_code', 'b0.6')
-
-# s.register('cl_reg_lambda', 0.0)
 s.register('cl_reg_config', 'l2')
+s.register('cl_reg_lambda', 0.0)
 
-s.register('data_config', 'beta:0.6')
+# s.register('balance_classes', True)
+
+s.register('data_config', 'beta:0.8')
 s.register('train_id', *range(5))
 
 s.register('lr', 0.001)

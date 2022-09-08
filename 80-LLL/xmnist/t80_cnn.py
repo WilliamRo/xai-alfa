@@ -71,6 +71,8 @@ def main(_):
   th.epoch = 100000
   th.batch_size = 128
 
+  th.balance_classes = True
+
   th.optimizer = 'adam'
   th.learning_rate = 0.003
   th.patience = 5
@@ -82,10 +84,14 @@ def main(_):
   th.save_mode = SaveMode.ON_RECORD
   th.print_cycle = 10
 
+  # th.beta1 = 0.9
+  # th.beta2 = 0.999
+  # th.optimizer_epsilon = 1e-8
+
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # LLL setups
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  th.cl_reg_config = 'moses'
+  th.cl_reg_config = 'l2'
   th.cl_reg_lambda = 1.0
 
   th.export_tensors_to_note = True

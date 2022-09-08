@@ -27,19 +27,27 @@ s.register('train', True)
 s.register('epoch', 1000)
 s.register('patience', 5)
 
-s.register('cl_reg_lambda', 0, 1, 10, 100)
-s.register('balance_classes', s.true_and_false)
+s.register('trial_id', 2)
+s.register('developer_code', 'prune')
 
-s.register('trial_id', *range(10))
-s.register('developer_code', 'b0.6')
-
-# s.register('cl_reg_lambda', 0.0)
+s.register('cl_reg_lambda', 0.0)
 s.register('cl_reg_config', 'l2')
 
 s.register('data_config', 'beta:0.6')
-s.register('train_id', *range(5))
 
 s.register('lr', 0.001)
 s.register('batch_size', 128)
+
+prune = False
+if prune:
+  # Prune
+  s.register('pruning_iterations', *range(10))
+  s.register('pruning_rate', 0.2)
+  s.register('train_id', 0)
+else:
+  # Pull
+  s.register('pruning_rate', 0.0)
+  s.register('train_id', *range(1, 5))
+  s.register('mark_to_load', '0908_mark(64-p-32)_pr10')
 
 s.run(rehearsal=False)

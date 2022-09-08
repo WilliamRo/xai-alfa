@@ -7,14 +7,12 @@ from tframe import tf
 from tframe.utils.misc import date_string
 from tframe.utils.organizer.task_tools import update_job_dir
 
-from lll.layers.gconv import GatedConv2D
-
 
 # -----------------------------------------------------------------------------
 # Define model here
 # -----------------------------------------------------------------------------
-model_name = 'matt'
-id = 1
+model_name = 'mark'
+id = 2
 def model():
   th = core.th
   model = m.get_container(flatten=False)
@@ -25,9 +23,9 @@ def model():
       continue
 
     c = int(c)
-    model.add(GatedConv2D(
+    model.add(m.mu.HyperConv2D(
       filters=c, kernel_size=th.kernel_size,
-      activation=th.activation, use_batchnorm=th.use_batchnorm and i > 0))
+      prune_frac=1, activation=th.activation))
 
   # Add flatten layer
   model.add(m.mu.Flatten())
@@ -47,6 +45,7 @@ def main(_):
   th.output_dim = 10
 
   th.data_config = 'beta:0.8'
+  # th.data_config = 'alpha:2,1,1,1'
   th.train_id = 0
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
@@ -65,31 +64,41 @@ def main(_):
   th.kernel_size = 3
   th.activation = 'relu'
   th.use_batchnorm = False
-
-  th.group_size = 3
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
   th.epoch = 100000
   th.batch_size = 128
 
+  th.balance_classes = True
+
   th.optimizer = 'adam'
   th.learning_rate = 0.003
   th.patience = 5
 
+  th.validation_per_round = 2
+
   th.train = True
-  th.overwrite = True
+  th.overwrite = True if th.train_id == 0 else False
   th.save_mode = SaveMode.ON_RECORD
-  th.print_cycle = 20
+  th.print_cycle = 10
 
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # LLL setups
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   th.cl_reg_config = 'l2'
-  th.cl_reg_lambda = 0.0
+  th.cl_reg_lambda = 1.0
 
   th.export_tensors_to_note = True
   th.developer_code = ''
+
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Etching setups
+  # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  th.pruning_rate = 0.0
+  # th.pruning_iterations = 0
+  # th.epoch = 1
+
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------
