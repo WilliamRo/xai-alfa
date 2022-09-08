@@ -15,7 +15,7 @@ pass
 # Specify summary file name and GPU ID here
 # -----------------------------------------------------------------------------
 summ_name = s.default_summ_name
-gpu_id = 0
+gpu_id = 1
 
 s.register('gather_summ_name', summ_name + '.sum')
 s.register('gpu_id', gpu_id)
@@ -37,7 +37,7 @@ s.register('data_config', 'beta:0.8')
 s.register('lr', 0.001)
 s.register('batch_size', 128)
 
-prune = False
+prune = True
 if prune:
   # Prune
   s.register('pruning_iterations', *range(10))

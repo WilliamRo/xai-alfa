@@ -22,6 +22,7 @@ class Bamboo(Plotter):
 
     self.summ_path = None
     self.new_settable_attr('title', True, bool, 'Option to show title')
+    self.new_settable_attr('x0', 0, float, 'x-axis start point')
 
 
   def draw_bamboo(self, x: list, ax: plt.Axes):
@@ -82,7 +83,7 @@ class Bamboo(Plotter):
     # Set style
     # ax.legend([f'Split-{i+1}' for i in range(n_splits)])
     ax.legend()
-    # ax.set_xlim([2, None])
+    ax.set_xlim([self.get('x0'), None])
 
     if self.get('title'):
       config, lambd, code, bc = [
@@ -141,7 +142,7 @@ if __name__ == '__main__':
   # summ_path = r'E:\xai-alfa\80-LLL\xmnist\08_mlp\0906_s80_mlp.sum'
   summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0908_s80_cnn.sum'
   # summ_path = r'E:\xai-alfa\80-LLL\xmnist\01_matt\0907_s80_matt.sum'
-  summ_path = r'E:\xai-alfa\80-LLL\xmnist\02_mark\0908_s80_mark.sum'
+  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\02_mark\0908_s80_mark.sum'
 
   p = Pictor(figure_size=(10, 5))
   bb = Bamboo(p)
