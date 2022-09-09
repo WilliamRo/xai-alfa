@@ -80,6 +80,11 @@ class LLLAgent(object):
 
     train_set, test_set = dataset.split(6000, 1000, over_classes=True)
 
+    # Put whole test set into depot
+    from lll_core import th
+    test_set.name = 'Test-*'
+    th.depot['test_set'] = test_set
+
     rs = [w / sum(ws) for w in ws]
     train_splits = [int(r * 6000) for r in rs]
     test_splits = [int(r * 1000) for r in rs]

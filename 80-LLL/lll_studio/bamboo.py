@@ -23,25 +23,30 @@ class Bamboo(Plotter):
     self.summ_path = None
     self.new_settable_attr('title', True, bool, 'Option to show title')
     self.new_settable_attr('x0', 0, float, 'x-axis start point')
+    self.new_settable_attr('star', False, bool, 'Option to show star')
 
 
   def draw_bamboo(self, x: list, ax: plt.Axes):
     notes = x
+    n_splits = self.N_SPLITS
 
     patience = notes[0].configs['patience']
     k = patience * 2
+
+    star = self.get('star')
     # ----------------------------------------------------------------------
     #  Retrieve package
     # ----------------------------------------------------------------------
-    acc_keys = [f'Test-{i + 1} Accuracy' for i in range(self.N_SPLITS)]
+    acc_keys = [f'Test-{i + 1} Accuracy' for i in range(n_splits)]
+    if star: acc_keys.append('Test-* Accuracy')
+
     package = [[n.step_array] + [n.scalar_dict[k] for k in acc_keys] for n in
                notes]
     id = notes[0].configs['trial_id']
 
     # Show average accuracy
     index = np.argmax(notes[-1].scalar_dict['Val-5 Accuracy'])
-    avg_acc = np.average([array[index] for array in package[-1][1:]])
-
+    avg_acc = np.average([array[index] for array in package[-1][1:n_splits+1]])
     # ----------------------------------------------------------------------
     #  Draw figure
     # ----------------------------------------------------------------------
@@ -53,10 +58,10 @@ class Bamboo(Plotter):
     y_max = max([max(np.concatenate([a for i, a in enumerate(arrays) if i > 0]))
                  for arrays in package])
 
-    end_points = [(0, 0) for _ in range(self.N_SPLITS)]
+    end_points = [(0, 0) for _ in range(n_splits + star)]
     for j, arrays in enumerate(package):
       x = arrays.pop(0)
-      if j == self.N_SPLITS - 1: _k = -k
+      if j == n_splits - 1: _k = -k
       else:
         next_x = package[j + 1][0]
         _k = max(np.argwhere(x < next_x[0]))[0] + 1
@@ -73,7 +78,11 @@ class Bamboo(Plotter):
         # Draw acc curve
         width = 2 if i == j else 1
         alpha = 1 if i == j else 0.7
-        label = f'Task-{i+1}' if i == j else None
+
+        label = None
+        if i == j: label = f'Task-{i+1}'
+        if i >= n_splits and j == len(package) - 1: label = f'Task-*'
+
         ax.plot(x[:_k], acc[:_k], color=colors[i], linewidth=width, alpha=alpha,
                 label=label)
 
@@ -133,6 +142,7 @@ class Bamboo(Plotter):
     self.register_a_shortcut('r', lambda: self.load_notes(self.summ_path),
                              description='Reload notes')
     self.register_a_shortcut('t', lambda: self.flip('title'), 'Toggle title')
+    self.register_a_shortcut('s', lambda: self.flip('star'), 'Toggle star')
 
   # endregion: Commands
 

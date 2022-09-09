@@ -45,8 +45,8 @@ def main(_):
   th.input_shape = [28, 28, 1]
   th.output_dim = 10
 
-  th.data_config = 'beta:0.8'
-  # th.data_config = 'alpha:2,1,1,1'
+  # th.data_config = 'beta:0.8'
+  th.data_config = 'alpha:6,1,1,1,1'
   th.train_id = 0
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device

@@ -28,18 +28,20 @@ s.register('epoch', 1000)
 s.register('patience', 5)
 
 s.register('trial_id', 1)
-s.register('developer_code', 'bc')
+s.register('developer_code', 'o-lr0.0002')
 
 s.register('cl_reg_config', 'l2')
-s.register('cl_reg_lambda', 0)
+s.register('cl_reg_lambda', 0.0)
 # s.register('cl_reg_lambda', 0, 1, 10, 100)
 
-s.register('balance_classes', s.true)
+s.register('balance_classes', s.false)
 
 s.register('data_config', 'beta:0.8')
-s.register('train_id', *range(5))
+# s.register('data_config', 'alpha:12,2,2,2,2')
 
-s.register('lr', 0.001)
+s.register('lr', 0.0002)
+s.constrain({'train_id': 1}, {'lr': 0.001})
 s.register('batch_size', 128)
 
+s.register('train_id', *range(5))
 s.run(rehearsal=False)
