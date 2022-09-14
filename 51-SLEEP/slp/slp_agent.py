@@ -39,12 +39,12 @@ class SLPAgent(DataAgent):
     # If dataset does not exist, create a new one, save and return
     if data_name == 'ucddb':
       from slp.slp_datasets.ucddb import UCDDB as DataSet
-    elif data_name in ['sleepedf','sleepedf-lll']:
+    elif data_name in ['sleep-cassette-train20','sleepedf-lll']:
       from slp.slp_datasets.sleepedfx import SleepEDFx as DataSet
     else: raise KeyError(f'!! Unknown dataset `{data_name}`')
 
     console.show_status(f'Loading `{data_name}` from {data_dir}')
-    data_set = DataSet.load_as_tframe_data(data_dir, **kwargs)
+    data_set = DataSet.load_as_tframe_data(data_dir, data_name, **kwargs)
     # data_set.save(file_path)
     # console.show_status(f'Dataset saved to `{file_path}`')
     return data_set

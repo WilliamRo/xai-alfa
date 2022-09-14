@@ -160,7 +160,7 @@ class LLLAgent(object):
     data_dir = os.path.dirname(data_dir)      # xai-alfa
     data_dir = os.path.join(data_dir, '51-SLEEP', 'data')
 
-    data_name = 'sleepedf-lll'
+    data_name = 'sleep-cassette-train20'
     first_k = sum([int(i) for i in th.data_config.split(',')])
     suffix = '-alpha'
     suffix_k = '' if first_k is None else f'({first_k})'
@@ -168,13 +168,22 @@ class LLLAgent(object):
     if os.path.exists(tfd_preprocess_path):
       with open(tfd_preprocess_path,'rb') as input_:
         console.show_status('Loading `{}` ...'.format(tfd_preprocess_path))
-        return pickle.load(input_)
+        datasets = pickle.load(input_)
+    else:
+      data_set: SleepEDFx = SLPAgent.load_as_tframe_data(data_dir,
+                                                         data_name=data_name,
+                                                         first_k=first_k,
+                                                         suffix=suffix)
+      datasets = data_set.partition_lll(tfd_preprocess_path)
 
-    data_set: SleepEDFx = SLPAgent.load_as_tframe_data(data_dir,
-                                                       data_name=data_name,
-                                                       first_k=first_k,
-                                                       suffix=suffix)
-    return data_set.partition_lll(tfd_preprocess_path)
+    if 'feature' in th.developer_code:
+      for data_tuple in datasets:
+        for ds in data_tuple:
+          x = ds.features
+          ds.data_dict['input-1'] = x[:, :, :2]
+          ds.data_dict['input-2'] = x[:, :, 2:3]
+
+    return datasets
 
   # endregion: Sleep-EDFx
 

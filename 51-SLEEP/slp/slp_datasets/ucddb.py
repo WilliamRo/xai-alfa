@@ -42,7 +42,7 @@ class UCDDB(SleepSet):
   # region: Abstract Methods (Data IO)
 
   @classmethod
-  def load_as_tframe_data(cls, data_dir, **kwargs) -> SleepSet:
+  def load_as_tframe_data(cls, data_dir, data_name=None, **kwargs) -> SleepSet:
     data_dir = os.path.join(data_dir, 'ucddb')
     tfd_path = os.path.join(data_dir, 'ucddb.tfds')
 

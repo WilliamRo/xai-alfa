@@ -53,7 +53,7 @@ class SleepEDFx(SleepSet):
   # region: Abstract Methods (Data IO)
 
   @classmethod
-  def load_as_tframe_data(cls, data_dir, first_k=None, suffix='',
+  def load_as_tframe_data(cls, data_dir, data_name=None, first_k=None, suffix='',
                           **kwargs) -> SleepSet:
     """...
 
@@ -64,8 +64,8 @@ class SleepEDFx(SleepSet):
     """
     suffix_k = '' if first_k is None else f'({first_k})'
 
-    data_dir = os.path.join(data_dir, 'sleepedf-lll')
-    tfd_path = os.path.join(data_dir, f'sleepedf-lll{suffix_k}{suffix}.tfds')
+    data_dir = os.path.join(data_dir, data_name)
+    tfd_path = os.path.join(data_dir, f'{data_name}{suffix_k}{suffix}.tfds')
 
     # Load .tfd file directly if it exists
     if os.path.exists(tfd_path): return cls.load(tfd_path)
@@ -79,7 +79,8 @@ class SleepEDFx(SleepSet):
       data_set = SleepEDFx(name=f'Sleep-EDF-Expanded{suffix_k}',
                            signal_groups=signal_groups)
     elif suffix == '-alpha':
-      data_set: SleepEDFx = cls.load_as_tframe_data(os.path.dirname(data_dir), first_k)
+      data_set: SleepEDFx = cls.load_as_tframe_data(os.path.dirname(data_dir),
+                                                    data_name, first_k)
       data_set.remove_wake_signal(config='terry')
     else: raise KeyError(f'!! Unknown suffix `{suffix}`')
 
@@ -112,7 +113,9 @@ class SleepEDFx(SleepSet):
     hypnogram_file_list: List[str] = walk(data_dir, 'file', '*Hypnogram*')
     if first_k is not None: hypnogram_file_list = hypnogram_file_list[:first_k]
     N = len(hypnogram_file_list)
+    print('*' * 20)
     print("patient_num:", N)
+    print('*' * 20)
     # Read records in order
     for i, hypnogram_file in enumerate(hypnogram_file_list):
       # Get id
@@ -154,6 +157,11 @@ class SleepEDFx(SleepSet):
       # .. sanity check (for sleepEDF, '-1' is necessary. error will occur
       # otherwise)
       L = (digital_signals[0].length) // cls.TICKS_PER_EPOCH
+      if len(stages) != L:
+        for ds in digital_signals:
+          ds.sequence = ds.sequence[:len(stages) * cls.TICKS_PER_EPOCH]
+          ds.ticks = ds.ticks[:len(stages) * cls.TICKS_PER_EPOCH]
+        L = (digital_signals[0].length) // cls.TICKS_PER_EPOCH
       assert len(stages) == L
 
       # Wrap data into signal group
@@ -172,7 +180,7 @@ class SleepEDFx(SleepSet):
 
 
   def configure(self, config_string: str):
-    """TODO:
+    """
     config_string examples: '0,2,6'
     """
     console.show_status(f'configure data...')
@@ -278,14 +286,14 @@ class SleepEDFx(SleepSet):
     def split_and_return(index, data_set, over_classes=True, random=True):
       from tframe.data.dataset import DataSet
       # assert isinstance(data_set, DataSet)
-      if index == 0:
-        train_ratio = 8.3
-        val_ratio = 1
-        test_ratio = 0.7
-      else:
-        train_ratio = 7
-        val_ratio = 1
-        test_ratio = 2
+      # if index == 0:
+      #   train_ratio = 8.3
+      #   val_ratio = 1
+      #   test_ratio = 0.7
+      # else:
+      train_ratio = 7
+      val_ratio = 1
+      test_ratio = 2
 
       names = [f'Train-{index+1}', f'Val-{index+1}', f'Test-{index+1}']
       data_sets = data_set.split(train_ratio,val_ratio,test_ratio,
@@ -314,9 +322,6 @@ class SleepEDFx(SleepSet):
     # split px to (train, val, test)
     for index, dataset in enumerate(datasets):
       assert isinstance(dataset, DataSet)
-      train_ratio = 7
-      val_ratio = 1
-      test_ratio = 2
       train_set, val_set, test_set = split_and_return(index, dataset)
       datasets[index] = (train_set, val_set, test_set)
 
@@ -377,7 +382,7 @@ if __name__ == '__main__':
   # _ = UCDDB.load_raw_data(th.data_dir, save_xai_rec=True, overwrite=False)
 
   # SLEEPEDF.load_raw_data(os.path.join(th.data_dir, 'sleepedf'), overwrite=True)
-  data_set = SleepEDFx.load_as_tframe_data(th.data_dir, suffix='-alpha')
+  data_set = SleepEDFx.load_as_tframe_data(th.data_dir,'sleepedf-lll',suffix='-alpha')
   data_set.report()
   data_set.show()
 
