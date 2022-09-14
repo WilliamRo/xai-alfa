@@ -96,7 +96,7 @@ class Bamboo(Plotter):
 
     if self.get('title'):
       config, lambd, code, bc = [
-        notes[0].configs[k] for k in (
+        self.get_config(k, notes[0].configs) for k in (
           'cl_reg_config', 'cl_reg_lambda', 'developer_code',
           'balance_classes')]
       title = f'[T-{id}]'
@@ -117,12 +117,14 @@ class Bamboo(Plotter):
     note_groups = []
 
     od = OrderedDict()
-    for n in notes: od[tuple([n.configs[k] for k in self.GROUP_KEYS])] = None
+    for n in notes:
+      od[tuple([self.get_config(k, n.configs) for k in self.GROUP_KEYS])] = None
     group_keys = list(od.keys())
 
     for cfgs in group_keys:
       _notes = [n for n in notes if all(
-        [n.configs[k] == cfg for cfg, k in zip(cfgs, self.GROUP_KEYS)])]
+        [self.get_config(k, n.configs) == cfg
+         for cfg, k in zip(cfgs, self.GROUP_KEYS)])]
       if len(_notes) == self.N_SPLITS: note_groups.append(_notes)
 
     assert len(note_groups) > 0
@@ -133,6 +135,12 @@ class Bamboo(Plotter):
     self.pictor.objects = note_groups[::-1]
     self.pictor.set_object_cursor(1)
     self.pictor.refresh()
+
+  @staticmethod
+  def get_config(key, configs):
+    assert isinstance(configs, dict)
+    if key in configs: return configs[key]
+    return '-'
 
   # endregion: Public Methods
 
