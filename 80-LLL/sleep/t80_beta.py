@@ -73,7 +73,7 @@ def main(_):
   th.task = th.Tasks.SLEEPEDF
   th.developer_code = 'feature'
 
-  th.data_config = '35,1,1,1,1'
+  th.data_config = '39'
   th.train_id = 0
 
   th.output_dim = 5
@@ -105,6 +105,7 @@ def main(_):
   th.patience = 20
 
   th.validation_per_round = 2
+  th.val_progress_bar = True
 
   th.train = True
   th.overwrite = True if th.train_id == 0 else False

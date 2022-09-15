@@ -11,7 +11,7 @@ from tframe.utils.organizer.task_tools import update_job_dir
 # -----------------------------------------------------------------------------
 # Define model here
 # -----------------------------------------------------------------------------
-model_name = 'SleepNet'
+model_name = 'data_fusion'
 id = 1
 def model():
   th = core.th
@@ -52,8 +52,10 @@ def main(_):
   # 0. date set setup
   # ---------------------------------------------------------------------------
   th.task = th.Tasks.SLEEPEDF
+  th.developer_code = 'data'
 
-  th.data_config = '3,1,1,1,1'
+  # '*1,2,3', '*1,2', '*3'
+  th.data_config = '*'
   th.train_id = 0
 
   th.output_dim = 5
@@ -78,6 +80,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   th.epoch = 1000
   th.batch_size = 32
+  th.balance_classes = False
 
   th.optimizer = 'adam'
   th.learning_rate = 0.003

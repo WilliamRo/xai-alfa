@@ -25,14 +25,17 @@ s.register('allow_growth', False)
 # -----------------------------------------------------------------------------
 s.register('train', True)
 s.register('epoch', 1000)
-s.register('patience', 20)
+s.register('patience', 10)
+s.register('developer_code', 'test-20:03')
 
-s.register('cl_reg_config', 'si')
+s.register('cl_reg_config', 'si','l2')
 s.register('cl_reg_lambda', 0., 0.5, 1.0)
+# s.register('cl_reg_config', 'l2')
+# s.register('cl_reg_lambda', 0.)
 
 s.register('trial_id', 0)
 
-s.register('data_config', '35,1,1,1,1')
+s.register('data_config', '5,1,1,1,1')
 s.register('train_id', *range(5))
 
 s.run(rehearsal=False)

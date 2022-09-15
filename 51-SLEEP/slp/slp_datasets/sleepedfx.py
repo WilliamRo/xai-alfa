@@ -275,7 +275,7 @@ class SleepEDFx(SleepSet):
   # region: Public Methods
 
 
-  def partition_lll(self, file_name):
+  def partition_lll(self):
     """th.data_config examples:
        (1) `95,1,1,1,1`
 
@@ -325,11 +325,6 @@ class SleepEDFx(SleepSet):
       train_set, val_set, test_set = split_and_return(index, dataset)
       datasets[index] = (train_set, val_set, test_set)
 
-    with open(file_name, 'wb') as output_:
-     console.show_status(f'Saving {file_name}...')
-     pickle.dump(datasets, output_, pickle.HIGHEST_PROTOCOL)
-
-    console.show_status('Finishing split dataset to [(train1, val1, test1),(train2, val2, test2)]...')
     return datasets
 
   # endregion: Public Methods

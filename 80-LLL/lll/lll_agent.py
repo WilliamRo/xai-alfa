@@ -164,7 +164,9 @@ class LLLAgent(object):
     first_k = sum([int(i) for i in th.data_config.split(',')])
     suffix = '-alpha'
     suffix_k = '' if first_k is None else f'({first_k})'
-    tfd_preprocess_path = os.path.join(data_dir, data_name, f'{data_name}{suffix_k}{suffix}-pro.tfds')
+    suffix_c = '-'.join(th.data_config.split(','))
+    tfd_preprocess_path = os.path.join(
+      data_dir, data_name, f'{data_name}{suffix_k}{suffix}-{suffix_c}-pro.tfds')
     if os.path.exists(tfd_preprocess_path):
       with open(tfd_preprocess_path,'rb') as input_:
         console.show_status('Loading `{}` ...'.format(tfd_preprocess_path))
@@ -174,7 +176,11 @@ class LLLAgent(object):
                                                          data_name=data_name,
                                                          first_k=first_k,
                                                          suffix=suffix)
-      datasets = data_set.partition_lll(tfd_preprocess_path)
+      datasets = data_set.partition_lll()
+      with open(tfd_preprocess_path, 'wb') as output_:
+        console.show_status(f'Saving {tfd_preprocess_path}...')
+        pickle.dump(datasets, output_, pickle.HIGHEST_PROTOCOL)
+      console.show_status('Finishing split dataset to [(train1, val1, test1),(train2, val2, test2)]...')
 
     if 'feature' in th.developer_code:
       for data_tuple in datasets:
@@ -182,6 +188,21 @@ class LLLAgent(object):
           x = ds.features
           ds.data_dict['input-1'] = x[:, :, :2]
           ds.data_dict['input-2'] = x[:, :, 2:3]
+
+    # Construct a test-*
+    from lll_core import th
+    data_dict = {}
+    for _, _, ts in datasets:
+      assert isinstance(ts, DataSet)
+      for key in ts.data_dict.keys():
+        if key not in data_dict:
+          data_dict[key] = ts.data_dict[key]
+        else:
+          data_dict[key] = np.concatenate(
+            [ts.data_dict[key], data_dict[key]], axis=0)
+
+    if ',' in th.data_config:
+      th.depot['test_set'] = DataSet(data_dict=data_dict, name='Test-*')
 
     return datasets
 
