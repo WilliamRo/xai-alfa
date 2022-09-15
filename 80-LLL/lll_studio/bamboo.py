@@ -73,6 +73,7 @@ class Bamboo(Plotter):
 
       # Draw vertical lines
       if j > 0:
+        y_max = 1.0
         ax.plot([end_points[0][0], end_points[0][0]], [y_min, y_max],
                 color='#ccc')
         gray_xs.append(end_points[0][0])
@@ -179,13 +180,12 @@ class Bamboo(Plotter):
 
 
 if __name__ == '__main__':
-  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\08_mlp\0906_s80_mlp.sum'
-  summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0908_s80_cnn.sum'
-  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\01_matt\0907_s80_matt.sum'
-  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\02_mark\0908_s80_mark.sum'
+  # summ_path = r'E:\xai-alfa\80-LLL\xmnist\09_cnn\0908_s80_cnn.sum'
+  summ_path = r'E:\xai-alfa\80-LLL\sleep\01_data_fusion\0915_s80_alpha.sum'
 
-  p = Pictor(figure_size=(10, 5))
+  p = Pictor(figure_size=(7, 3))
   bb = Bamboo(p)
   plotter = p.add_plotter(bb)
   bb.load_notes(summ_path)
+  bb.set('y0', 0.6)
   p.show()
