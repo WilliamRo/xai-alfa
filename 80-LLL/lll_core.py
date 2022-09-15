@@ -54,8 +54,8 @@ th.validation_per_round = 2
 th.export_tensors_upon_validation = True
 th.epoch_as_step = False
 
-th.val_batch_size = 1000
-th.eval_batch_size = 1000
+th.val_batch_size = 100
+th.eval_batch_size = 100
 
 th.evaluate_test_set = True
 
@@ -99,6 +99,11 @@ def activate():
     # Evaluate on test sets
     model.evaluate_image_sets(
       *test_sets, show_class_detail=False, show_confusion_matrix=False)
+  else:
+    # Load best model after training
+    model.agent.load()
+    # Evaluate on test sets
+    model.evaluate_pro(test_set, batch_size=100, verbose=True)
 
   # End
   model.shutdown()
