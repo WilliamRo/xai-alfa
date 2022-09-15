@@ -23,7 +23,11 @@ class Bamboo(Plotter):
     self.summ_path = None
     self.new_settable_attr('title', True, bool, 'Option to show title')
     self.new_settable_attr('x0', 0, float, 'x-axis start point')
+    self.new_settable_attr('y0', None, float, 'y-axis start point')
     self.new_settable_attr('star', False, bool, 'Option to show star')
+    self.new_settable_attr('xylabel', True, bool, 'Option to show x-y labels')
+    self.new_settable_attr('autox0', True, bool, 'Option to use auto x0')
+    self.new_settable_attr('legend', 'Data', str, 'Legend head')
 
 
   def draw_bamboo(self, x: list, ax: plt.Axes):
@@ -59,6 +63,7 @@ class Bamboo(Plotter):
                  for arrays in package])
 
     end_points = [(0, 0) for _ in range(n_splits + star)]
+    gray_xs = []
     for j, arrays in enumerate(package):
       x = arrays.pop(0)
       if j == n_splits - 1: _k = -k
@@ -67,8 +72,10 @@ class Bamboo(Plotter):
         _k = max(np.argwhere(x < next_x[0]))[0] + 1
 
       # Draw vertical lines
-      if j > 0: ax.plot([end_points[0][0], end_points[0][0]],
-                        [y_min, y_max], color='#ccc')
+      if j > 0:
+        ax.plot([end_points[0][0], end_points[0][0]], [y_min, y_max],
+                color='#ccc')
+        gray_xs.append(end_points[0][0])
 
       for i, acc in enumerate(arrays):
         # Draw dashed lines
@@ -80,8 +87,9 @@ class Bamboo(Plotter):
         alpha = 1 if i == j else 0.7
 
         label = None
-        if i == j: label = f'Task-{i+1}'
-        if i >= n_splits and j == len(package) - 1: label = f'Task-*'
+        lgd = self.get('legend')
+        if i == j: label = f'{lgd}-{i+1}'
+        if i >= n_splits and j == len(package) - 1: label = f'{lgd}-*'
 
         ax.plot(x[:_k], acc[:_k], color=colors[i], linewidth=width, alpha=alpha,
                 label=label)
@@ -91,8 +99,19 @@ class Bamboo(Plotter):
 
     # Set style
     # ax.legend([f'Split-{i+1}' for i in range(n_splits)])
+
+    x0 = self.get('x0')
+    if self.get('autox0'):
+      x0 = gray_xs[0] - max(
+        [gray_xs[i] - gray_xs[i - 1] for i, _ in enumerate(gray_xs)])
+
     ax.legend()
-    ax.set_xlim([self.get('x0'), None])
+    ax.set_xlim([x0, x[_k]])
+    ax.set_ylim([self.get('y0'), 1.0])
+
+    if self.get('xylabel'):
+      ax.set_xlabel('Iterations (K)')
+      ax.set_ylabel('Accuracy')
 
     if self.get('title'):
       config, lambd, code, bc = [
@@ -151,6 +170,9 @@ class Bamboo(Plotter):
                              description='Reload notes')
     self.register_a_shortcut('t', lambda: self.flip('title'), 'Toggle title')
     self.register_a_shortcut('s', lambda: self.flip('star'), 'Toggle star')
+    self.register_a_shortcut('l', lambda: self.flip('xylabel'),
+                             'Toggle ' 'xylabel')
+    self.register_a_shortcut('a', lambda: self.flip('autox0'), 'Toggle autox0')
 
   # endregion: Commands
 

@@ -100,6 +100,10 @@ def activate():
     model.evaluate_image_sets(
       *test_sets, show_class_detail=False, show_confusion_matrix=False)
   else:
+    from tframe import DataSet
+    assert isinstance(test_set, DataSet)
+    test_set.properties[test_set.NUM_CLASSES] = 5
+
     # Load best model after training
     model.agent.load()
     # Evaluate on test sets
