@@ -21,10 +21,12 @@ x = np.array(load_image(file_path), copy=False).astype(np.float32)
 # Show data in Omma
 # -----------------------------------------------------------------------------
 from pictor.plotters.retina import Retina
+from xem.ui.plotters.microscope import Microscope
 
 om = Omma('Omma', figure_size=(7, 7))
 om.objects = [x]
-om.add_plotter(Retina())
+# om.add_plotter(Retina())
+om.add_plotter(Microscope())
 om.show()
 
 
