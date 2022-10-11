@@ -49,7 +49,8 @@ class DSCSet(SequenceSet):
       group_size = len(self.groups[0])
       val_size = int(group_size * th.val_proportion)
       test_size = int(group_size * th.test_proportion)
+      train_size = group_size - val_size - test_size
 
-    return self.split(-1, val_size, test_size, over_classes=True,
+    return self.split(train_size, val_size, test_size, over_classes=True,
                       random=True, names=('TrainSet', 'ValSet', 'TestSet'))
 
