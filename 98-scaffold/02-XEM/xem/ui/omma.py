@@ -11,6 +11,7 @@ class Omma(Pictor):
     # Remove close key
     self.shortcuts.library.pop('q')
     self.shortcuts.library.pop('Escape')
+    self.shortcuts.register_key_event('Q', self.quit, 'Quit')
 
     # Use command `q` to quit
     self.q = self.quit
