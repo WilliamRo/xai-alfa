@@ -28,10 +28,10 @@ s.register('epoch', 1000)
 s.register('patience', 5)
 
 s.register('trial_id', 1)
-s.register('developer_code', 'o-lr0.0002')
+s.register('developer_code', '')
 
-s.register('cl_reg_config', 'l2')
-s.register('cl_reg_lambda', 0.0)
+s.register('cl_reg_config', 'si')
+s.register('cl_reg_lambda', 5.0)
 # s.register('cl_reg_lambda', 0, 1, 10, 100)
 
 s.register('balance_classes', s.false)

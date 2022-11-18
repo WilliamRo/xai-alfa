@@ -24,7 +24,7 @@ def get_res_block_using_DAG(filters, kernel_size, activation):
     edges='1;11', name='ResBlock')
 
 # -----------------------------------------------------------------------------
-# Initialize a tframe.Predictior
+# Initialize a tframe.Predictor
 # -----------------------------------------------------------------------------
 model = Predictor(mark='resnet')
 model.add(mu.Input(sample_shape=[32, 32, 3]))

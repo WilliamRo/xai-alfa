@@ -187,5 +187,5 @@ if __name__ == '__main__':
   bb = Bamboo(p)
   plotter = p.add_plotter(bb)
   bb.load_notes(summ_path)
-  bb.set('y0', 0.6)
+  bb.set('y0', 0.5)
   p.show()

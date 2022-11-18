@@ -15,6 +15,7 @@ note.scalar_dict: {key: scalar_array}
 note.step_array: numpy array
 
 """
+# summ_path = r'E:\wanglin\project\deep_learning\xai-alfa\80-LLL\sleep\01_SleepNet\0825_s80_alpha.sum'
 summ_path = r'E:\wanglin\project\deep_learning\xai-alfa\80-LLL\sleep\01_SleepNet\0825_s80_alpha.sum'
 trial_id = 4
 
