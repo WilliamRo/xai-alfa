@@ -10,19 +10,29 @@ from tframe.utils.organizer.task_tools import update_job_dir
 # -----------------------------------------------------------------------------
 # Define model here
 # -----------------------------------------------------------------------------
-model_name = 'mlp'
-id = 1
+model_name = 'bnn'
+id = 9
 def model():
   th = core.th
-  model = m.get_container(flatten=True)
-  for n in core.th.archi_string.split('-'):
-    model.add(m.mu.Dense(int(n), activation=th.activation))
-    if th.dropout > 0: model.add(m.mu.Dropout(1 - th.dropout))
+  model = m.get_container(flatten=False)
+
+  for i, c in enumerate(core.th.archi_string.split('-')):
+    if c == 'p':
+      model.add(m.mu.MaxPool2D(pool_size=2, strides=2))
+      continue
+
+    c = int(c)
+    model.add(m.mu.Conv2D(
+      filters=c, kernel_size=th.kernel_size, use_bias=False,
+      activation=th.activation, use_batchnorm=th.use_batchnorm and i > 0))
+
+  # Add flatten layer
+  model.add(m.mu.Flatten())
   return m.finalize(model)
 
 
 def main(_):
-  console.start('{} on FMNIST task'.format(model_name.upper()))
+  console.start('{} on FMNIST'.format(model_name.upper()))
 
   th = core.th
   th.rehearse = False
@@ -38,23 +48,25 @@ def main(_):
   summ_name = model_name
   th.prefix = '{}_'.format(date_string())
 
-  th.visible_gpu_id = 0
+  th.visible_gpu_id = 1
   # ---------------------------------------------------------------------------
   # 2. model setup
   # ---------------------------------------------------------------------------
   th.model = model
 
-  th.archi_string = '128'
-  th.activation = 'relu'
-  th.dropout = 0.0
+  th.archi_string = '64-p-32'
+  th.kernel_size = 3
+  th.activation = 'signst'
+  th.binarize_weights = True
+  th.use_batchnorm = False
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
-  th.epoch = 1000
+  th.epoch = 100000
   th.batch_size = 128
 
   th.optimizer = 'adam'
-  th.learning_rate = 0.0003
+  th.learning_rate = 0.003
 
   th.train = True
   th.overwrite = True
@@ -62,7 +74,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------
-  th.mark = '{}({})_{}'.format(model_name, th.archi_string, th.activation)
+  th.mark = '{}({})'.format(model_name, th.archi_string)
   th.gather_summ_name = th.prefix + summ_name + '.sum'
   core.activate()
 

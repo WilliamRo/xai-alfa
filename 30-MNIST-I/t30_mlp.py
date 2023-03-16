@@ -1,10 +1,8 @@
-import fm_core as core
-import fm_mu as m
-
-from tframe import console
+import mn_core as core
+import mn_mu as m
 from tframe import tf
+from tframe import console
 from tframe.utils.misc import date_string
-from tframe.utils.organizer.task_tools import update_job_dir
 
 
 # -----------------------------------------------------------------------------
@@ -12,62 +10,74 @@ from tframe.utils.organizer.task_tools import update_job_dir
 # -----------------------------------------------------------------------------
 model_name = 'mlp'
 id = 1
-def model():
-  th = core.th
-  model = m.get_container(flatten=True)
-  for n in core.th.archi_string.split('-'):
-    model.add(m.mu.Dense(int(n), activation=th.activation))
-    if th.dropout > 0: model.add(m.mu.Dropout(1 - th.dropout))
-  return m.finalize(model)
+def model(th):
+  assert isinstance(th, m.Config)
+  model = m.get_container(th, flatten=True)
+  # Add hidden layers
+  for i, n in enumerate([int(s) for s in th.archi_string.split('-')]):
+    model.add(m.Dense(n))
+    if i > 0 and th.use_batchnorm: model.add(m.BatchNormalization())
+    model.add(m.Activation(th.spatial_activation))
+  # Finalize model
+  return m.finalize(th, model)
 
 
 def main(_):
-  console.start('{} on FMNIST task'.format(model_name.upper()))
+  console.start('{} on MNIST task'.format(model_name.upper()))
 
   th = core.th
-  th.rehearse = False
+
+  th.developer_code += 'macro'
+  th.alpha = 0.9
   # ---------------------------------------------------------------------------
   # 0. date set setup
   # ---------------------------------------------------------------------------
-  pass
-
   # ---------------------------------------------------------------------------
   # 1. folder/file names and device
   # ---------------------------------------------------------------------------
-  update_job_dir(id, model_name)
-  summ_name = model_name
-  th.prefix = '{}_'.format(date_string())
+  th.update_job_dir(id, model_name)
+  th.set_date_as_prefix()
 
+  summ_name = model_name
+  th.suffix = '_t00'
   th.visible_gpu_id = 0
+
   # ---------------------------------------------------------------------------
   # 2. model setup
   # ---------------------------------------------------------------------------
   th.model = model
+  th.spatial_activation = 'relu'
+  th.use_batchnorm = True
+  th.archi_string = '200-100'
 
-  th.archi_string = '128'
-  th.activation = 'relu'
-  th.dropout = 0.0
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
   th.epoch = 1000
   th.batch_size = 128
+  th.print_cycle = 20
+  th.validation_per_round = 2
 
   th.optimizer = 'adam'
-  th.learning_rate = 0.0003
+  th.learning_rate = 0.003
 
+  th.patience = 2
+  th.early_stop = True
+  # ---------------------------------------------------------------------------
+  # 4. summary and note setup
+  # ---------------------------------------------------------------------------
   th.train = True
+  th.save_model = True
   th.overwrite = True
-  th.print_cycle = 20
+
   # ---------------------------------------------------------------------------
-  # 4. other stuff and activate
+  # 5. other stuff and activate
   # ---------------------------------------------------------------------------
-  th.mark = '{}({})_{}'.format(model_name, th.archi_string, th.activation)
-  th.gather_summ_name = th.prefix + summ_name + '.sum'
+  th.mark = '{}({})'.format(model_name, th.archi_string)
+  th.gather_summ_name = th.prefix + summ_name + th.suffix +  '.sum'
   core.activate()
 
 
 if __name__ == '__main__':
   console.suppress_logging()
   tf.app.run()
-

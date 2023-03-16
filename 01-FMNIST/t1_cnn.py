@@ -32,7 +32,7 @@ def model():
 
 
 def main(_):
-  console.start('{} on CIFAR-10 task'.format(model_name.upper()))
+  console.start('{} on FMNIST'.format(model_name.upper()))
 
   th = core.th
   th.rehearse = False
