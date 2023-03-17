@@ -56,9 +56,13 @@ def main(_):
 
   th.archi_string = '64-p-32'
   th.kernel_size = 3
-  th.activation = 'signst'
-  th.binarize_weights = True
+
   th.use_batchnorm = False
+
+  # BNN 2016
+  th.binarize_weights = True
+  th.global_constraint = 'value'
+  th.activation = 'signst'
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------
@@ -66,7 +70,7 @@ def main(_):
   th.batch_size = 128
 
   th.optimizer = 'adam'
-  th.learning_rate = 0.003
+  th.learning_rate = 0.0001
 
   th.train = True
   th.overwrite = True

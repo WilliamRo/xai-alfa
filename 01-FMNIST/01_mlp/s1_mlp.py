@@ -1,6 +1,8 @@
-import sys
-sys.path.append('../')
-sys.path.append('../../')
+import sys, os
+path = os.path.abspath(__file__)
+for _ in range(3):
+  path = os.path.dirname(path)
+  sys.path.append(path)
 
 from tframe.utils.script_helper import Helper
 s = Helper()
