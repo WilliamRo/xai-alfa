@@ -8,7 +8,8 @@ import numpy as np
 
 # (1) Load data
 note_path = r'01_cnn/0405_cnn.sum'
-note = Note.load(note_path)[1]
+note_path = r'02_resnet/0405_resnet.sum'
+note = Note.load(note_path)[0]
 metric_key = 'Validati Accuracy'
 
 t = note.step_array

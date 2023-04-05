@@ -19,10 +19,18 @@ def model():
       model.add(m.mu.MaxPool2D(pool_size=2, strides=2))
       continue
 
-    c = int(c)
-    model.add(m.mu.Conv2D(
-      filters=c, kernel_size=th.kernel_size, use_bias=False,
-      activation=th.activation))
+    if c[0] == 'r':
+      c = int(c[1:])
+      vertices = [m.mu.HyperConv2D(c, th.kernel_size, activation=th.activation),
+                  m.mu.Merge.Sum()]
+      edges = '1;11'
+      model.add(m.mu.ForkMergeDAG(vertices, edges, name=f'Residual{i+1}'))
+
+    else:
+      c = int(c)
+      model.add(m.mu.Conv2D(
+        filters=c, kernel_size=th.kernel_size, use_bias=False,
+        activation=th.activation))
 
   # Add flatten layer
   model.add(m.mu.Flatten())
@@ -52,7 +60,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   th.model = model
 
-  th.archi_string = '64-p-32-32-32-32'
+  th.archi_string = '32-p-r32-r32-r32-r32'
   th.kernel_size = 3
   th.activation = 'relu'
   # ---------------------------------------------------------------------------
