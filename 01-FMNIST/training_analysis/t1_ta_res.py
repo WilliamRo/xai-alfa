@@ -34,6 +34,17 @@ def model():
 
   # Add flatten layer
   model.add(m.mu.Flatten())
+
+  # Register callback
+  from callback_model_updated import put_statistics_to_note
+  from tframe import context
+
+  th.stats_max_length = 2
+  th.monitor_weight_history = True
+  th.monitor_weight_grads = True
+
+  context.depot['callback_model_updated'] = put_statistics_to_note
+
   return m.finalize(model)
 
 
@@ -79,10 +90,10 @@ def main(_):
   # 4. monitor setup
   # ---------------------------------------------------------------------------
   th.validate_at_the_beginning = True
-  th.validation_per_round = 100
-  th.export_weights = True
+  th.validation_per_round = 20
+  # th.export_weights = True
 
-  th.suffix = '_001'
+  th.suffix = '_apr5'
   # ---------------------------------------------------------------------------
   # 5. other stuff and activate
   # ---------------------------------------------------------------------------
