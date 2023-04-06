@@ -90,10 +90,10 @@ def main(_):
   # 4. monitor setup
   # ---------------------------------------------------------------------------
   th.validate_at_the_beginning = True
-  th.validation_per_round = 20
+  th.validation_per_round = 100
   # th.export_weights = True
 
-  th.suffix = '_apr5'
+  th.suffix = '_apr6'
   # ---------------------------------------------------------------------------
   # 5. other stuff and activate
   # ---------------------------------------------------------------------------

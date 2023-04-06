@@ -7,18 +7,20 @@ import numpy as np
 
 
 # (1) Load data
-note_path = r'01_cnn/0405_cnn.sum'
-note_path = r'02_resnet/0405_resnet.sum'
-note = Note.load(note_path)[1]
+note_path = r'02_resnet/0406_resnet.sum'
+note = Note.load(note_path)[0]
 metric_key = 'Validati Accuracy'
 
 # In data keys are names, values are list of numpy arrays
-theta: dict = note.misc['theta']
-epoch = theta.pop('epoch')
-curves = {}
-for k, v in theta.items():
-  key = k.split('/')[1]
-  curves[key] = np.array(v)
+key = 'growth-record'
+growth_record: dict = note.misc[key]
+epoch_ticks = growth_record.pop('epoch_ticks')
+
+# Pack objects
+objects, labels = [], []
+for label, stat_dict in growth_record.items():
+  labels.append(label)
+  objects.append({k.split('/')[1]: np.array(v) for k, v in stat_dict.items()})
 
 
 # (2) Visualize curves using Pictor
@@ -30,9 +32,18 @@ class GCVisualizer(Plotter):
 
     self.new_settable_attr('show_metric', False, bool,
                            'Option to show metric curve')
+    self.new_settable_attr('global_scale', False, bool,
+                           'Option to use global scale')
+    self.new_settable_attr('gs_percentile', 99.0, float,
+                           'Percentile of global scale')
     self.new_settable_attr('xlim', None, str, 'xlim')
+
     self.register_a_shortcut('m', lambda: self.flip('show_metric'),
                              'Toggle show_metric')
+    self.register_a_shortcut('g', lambda: self.flip('global_scale'),
+                             'Toggle global_scale')
+
+  # region: Properties
 
   @property
   def xlim(self):
@@ -41,18 +52,41 @@ class GCVisualizer(Plotter):
     xmin, xmax = v.split(',')
     return [None if xmx == '' else float(xmx) for xmx in (xmin, xmax)]
 
-  def show_curves(self, x, ax: plt.Axes):
+  # endregion: Properties
+
+  # region: APIs
+
+  def set_global_scale_percentile(self, v: float):
+    assert 0 <= v <= 100
+    self.set('gs_percentile', v)
+  sgp = set_global_scale_percentile
+
+  # endregion: APIs
+
+  def show_curves(self, x, title, ax: plt.Axes):
     curves = x
     assert isinstance(curves, dict)
 
     N = len(curves)
     margin = 0.05
+    global_bound = None
+    if self.get('global_scale'):
+      p = self.get('gs_percentile')
+      k = f'{title}-gs{p:.1f}'
+
+      def _init(v_dict: dict):
+        values = np.concatenate([np.ravel(v) for v in v_dict.values()])
+        return np.percentile(values, p)
+
+      global_bound = self.get_from_pocket(k, initializer=lambda: _init(curves))
+
     for i, (k, y) in enumerate(curves.items()):
       y = y - min(y)
-      y = y / max(y) * (1.0 - 2 * margin) + margin
+      deno = max(y) if global_bound is None else global_bound
+      y = y / deno * (1.0 - 2 * margin) + margin
       y = y + N - 1 - i
 
-      ax.plot(epoch, y, color='grey')
+      ax.plot(epoch_ticks, y, color='grey')
 
     # Set y_ticks
     ax.set_yticks([N - i - 0.5 for i in range(N)])
@@ -60,10 +94,11 @@ class GCVisualizer(Plotter):
 
     # Set x-axis style
     mi, ma = self.xlim
-    if mi is None: mi = epoch[0]
-    if ma is None: ma = epoch[-1]
+    if mi is None: mi = epoch_ticks[0]
+    if ma is None: ma = epoch_ticks[-1]
     ax.set_xlim(mi, ma)
     ax.set_xlabel('Epoch')
+    ax.set_title(title)
 
     # Show metric curve if necessary
     if not self.get('show_metric'): return
@@ -71,5 +106,4 @@ class GCVisualizer(Plotter):
     ax.plot(note.step_array, note.scalar_dict[metric_key])
     ax.set_ylabel(metric_key)
 
-
-GCVisualizer.plot([curves], fig_size=(8, 6))
+GCVisualizer.plot(objects, labels=labels, fig_size=(8, 6))

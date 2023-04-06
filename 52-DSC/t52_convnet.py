@@ -53,7 +53,11 @@ def main(_):
 
   th.archi_string = '16-16-m-32-32-m-64'
   th.kernel_size = 3
-  th.activation = 'relu'
+
+  # BNN 2016
+  # th.activation = 'signst'
+  # th.binarize_weights = True
+  # th.global_constraint = 'value'
   # ---------------------------------------------------------------------------
   # 3. trainer setup
   # ---------------------------------------------------------------------------

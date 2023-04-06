@@ -59,7 +59,7 @@ th.gather_note = True
 
 th.val_batch_size = 200
 th.eval_batch_size = 200
-th.val_progress_bar = True
+th.val_progress_bar = False
 
 
 
