@@ -75,7 +75,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   context.depot['callback_model_updated'] = put_statistics_to_note
 
-  th.stats_max_length = 2
+  th.stats_max_length = 5
   th.monitor_weight_history = True
   th.monitor_weight_grads = True
 
@@ -83,7 +83,7 @@ def main(_):
   th.validation_per_round = 100
 
   th.suffix = '_apr6'
-  th.developer_code = '02'
+  th.developer_code = '04'
   # ---------------------------------------------------------------------------
   # 5. other stuff and activate
   # ---------------------------------------------------------------------------

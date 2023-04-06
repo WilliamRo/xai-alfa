@@ -1,6 +1,7 @@
 from tframe.trainers.trainer import Trainer
 from tframe.utils.maths.stat_tools import Statistic
 from tframe import context
+from tframe import hub as th
 
 import numpy as np
 
@@ -15,7 +16,7 @@ def put_statistics_to_note(trainer: Trainer):
 
   # Initialize `theta` dict if necessary
   key = 'growth-record'
-  stats_labels = ['Weight-Stats', 'Grad-Stats']
+  stats_labels = ['Weight-Stats', 'Grad-Stats', f'WC-{th.stats_max_length}']
   if key not in note.misc:
     note.misc[key] = {k: {w.name: [] for w in monitor._weights_list}
                       for k in stats_labels}
@@ -38,4 +39,12 @@ def put_statistics_to_note(trainer: Trainer):
     assert isinstance(s, Statistic)
     v = np.linalg.norm(s.last_value)
     d[w.name].append(v)
+
+  # Takedown WC-X
+  # d = growth_record[stats_labels[2]]
+  # for w, s in monitor._weight_history.items():
+  #   assert isinstance(s, Statistic)
+  #   s.set_max_length(th.stats_max_length)  # TODO
+  #   v = np.linalg.norm(s._value_list[0] - s.last_value)
+  #   d[w.name].append(v)
 

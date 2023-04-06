@@ -9,7 +9,7 @@ import numpy as np
 # (1) Load data
 note_path = r'03_fcnn/0406_fcnn.sum'
 notes: list = Note.load(note_path)
-code = '02'
+code = '04'
 note = [n for n in notes if n.configs['developer_code'] == code][0]
 metric_key = 'Validati Accuracy'
 
