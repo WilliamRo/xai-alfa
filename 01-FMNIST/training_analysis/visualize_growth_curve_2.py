@@ -7,8 +7,10 @@ import numpy as np
 
 
 # (1) Load data
-note_path = r'02_resnet/0406_resnet.sum'
-note = Note.load(note_path)[0]
+note_path = r'03_fcnn/0406_fcnn.sum'
+notes: list = Note.load(note_path)
+code = '02'
+note = [n for n in notes if n.configs['developer_code'] == code][0]
 metric_key = 'Validati Accuracy'
 
 # In data keys are names, values are list of numpy arrays
@@ -20,7 +22,8 @@ epoch_ticks = growth_record.pop('epoch_ticks')
 objects, labels = [], []
 for label, stat_dict in growth_record.items():
   labels.append(label)
-  objects.append({k.split('/')[1]: np.array(v) for k, v in stat_dict.items()})
+  objects.append({'/'.join(k.split('/')[1:3]): np.array(v)
+                  for k, v in stat_dict.items()})
 
 
 # (2) Visualize curves using Pictor
@@ -89,6 +92,7 @@ class GCVisualizer(Plotter):
       ax.plot(epoch_ticks, y, color='grey')
 
     # Set y_ticks
+    ax.set_ylim([0, N])
     ax.set_yticks([N - i - 0.5 for i in range(N)])
     ax.set_yticklabels(list(curves.keys()))
 
@@ -106,4 +110,4 @@ class GCVisualizer(Plotter):
     ax.plot(note.step_array, note.scalar_dict[metric_key])
     ax.set_ylabel(metric_key)
 
-GCVisualizer.plot(objects, labels=labels, fig_size=(8, 6))
+GCVisualizer.plot(objects, labels=labels, fig_size=(12, 8))

@@ -13,9 +13,15 @@ def get_container(flatten=False):
   return model
 
 
-def finalize(model):
+def finalize(model, fully_conv=False):
   assert isinstance(model, Classifier)
-  model.add(mu.Dense(10, use_bias=False, activation='softmax'))
+
+  if fully_conv:
+    model.add(mu.Conv2D(filters=10, kernel_size=1, use_bias=False))
+    model.add(mu.GlobalAveragePooling2D())
+    model.add(mu.Activation('softmax'))
+  else:
+    model.add(mu.Dense(10, use_bias=False, activation='softmax'))
 
   # Build model
   model.build(batch_metric=['accuracy'])

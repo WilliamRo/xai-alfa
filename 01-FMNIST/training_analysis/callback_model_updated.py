@@ -29,7 +29,7 @@ def put_statistics_to_note(trainer: Trainer):
   d = growth_record[stats_labels[0]]
   for w, s in monitor._weight_history.items():
     assert isinstance(s, Statistic)
-    v = np.linalg.norm(s._value_list[0] - s.last_value)
+    v = np.linalg.norm(s._value_list[-2] - s.last_value)
     d[w.name].append(v)
 
   # Takedown grad-related statistics
