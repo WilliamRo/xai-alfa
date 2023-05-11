@@ -16,10 +16,10 @@ class EncoderAnalyzer(Plotter):
 
     # Define settable attributes
     self.new_settable_attr('cmap', 'RdBu', str, 'Color map')
-    self.new_settable_attr('wmax', 0.04, float, 'Cut-off value of weights')
-    self.new_settable_attr('xmax', 0.14, float,
+    self.new_settable_attr('wmax', None, float, 'Cut-off value of weights')
+    self.new_settable_attr('xmax', None, float,
                            'Max value of x-axis in scatter plot')
-    self.new_settable_attr('ymax', 22, float,
+    self.new_settable_attr('ymax', 12, float,
                            'Max value of y-axis in scatter plot')
 
     self.new_settable_attr('xper', 50, float, 'Minimum x-axis percentile')
@@ -35,14 +35,6 @@ class EncoderAnalyzer(Plotter):
     return self.pictor.get_element(self.pictor.Keys.OBJECTS)
 
   @property
-  def frequency(self):
-    # deprecated
-    w = self.selected_w
-    der1 = np.sign(w[:, :-1] - w[:, 1:])
-    der2 = np.sign(der1[:, :-1] - der1[:, 1:])
-    return np.sum(np.abs(der2), axis=-1)
-
-  @property
   def sign_frequency(self):
     return self._calc_freq(self.selected_w)
 
@@ -55,12 +47,19 @@ class EncoderAnalyzer(Plotter):
   # region: Private Methods
 
   def _calc_freq(self, w):
-    w = np.sign(w)
-    der1 = np.sign(w[:, :-1] - w[:, 1:])
-    return np.sum(np.abs(der1), axis=-1).astype(int)
+    A = np.abs(np.fft.fft(w))
+    A = A[:, :A.shape[1] // 2]
+    # For some reason +1 is important
+    return np.argmax(A, axis=-1) + 1
+
+    # w = np.sign(w)
+    # der1 = np.sign(w[:, :-1] - w[:, 1:])
+    # return np.sum(np.abs(der1), axis=-1).astype(int)
 
   def _calc_amp(self, w):
-    return np.max(w, axis=-1) - np.min(w, axis=-1)
+    A = np.abs(np.fft.fft(w))
+    return np.sum(A, -1)
+    # return np.max(w, axis=-1) - np.min(w, axis=-1)
 
   # endregion: Private Methods
 
@@ -71,10 +70,10 @@ class EncoderAnalyzer(Plotter):
     freqs = self._calc_freq(w)
 
     freq_list = (list(range(min(freqs), max(freqs) + 1))
-                 if self.get('frequp') else [0])
+                 if self.get('frequp') else [-1])
 
     for freq in freq_list:
-      if freq > 0:
+      if freq >= 0:
         indices = np.argwhere(freq == freqs).ravel()
         w_f: np.ndarray = w[indices]
       else:
@@ -88,7 +87,8 @@ class EncoderAnalyzer(Plotter):
 
       while w_f.size > 0:
         corr = [np.correlate(seq, result[-1]) for seq in w_f]
-        i = np.argmax(corr)
+        score = corr
+        i = np.argmax(score)
         result.append(w_f[i])
         w_f = np.delete(w_f, i, axis=0)
 
@@ -120,9 +120,10 @@ class EncoderAnalyzer(Plotter):
 
   def imshow_w(self, ax: plt.Axes, w, fig):
     wmax = self.get('wmax')
-    vmin, vmax = (-wmax, wmax) if wmax else (None, None)
+    if wmax is None: wmax = max(abs(np.min(w)), np.max(w))
+    vmin, vmax = -wmax, wmax
 
-    interp = None
+    interp = 'bicubic'
     im = ax.imshow(
       w, cmap=self.get('cmap'), vmin=vmin, vmax=vmax,
       aspect='auto', interpolation=interp)
@@ -132,10 +133,18 @@ class EncoderAnalyzer(Plotter):
     cax = divider.append_axes('right', size='5%', pad=0.05)
     fig.colorbar(im, cax=cax)
 
+  def imshow_spectrum(self, ax: plt.Axes, w):
+    A = np.abs(np.fft.fft(w))
+    A = A[:, :A.shape[1] // 2]
+
+    interp = 'bicubic'
+    cmap = 'YlGn'
+    ax.imshow(A, cmap=cmap, aspect='auto', interpolation=interp)
+
   def sort_and_plot(self,fig: plt.Figure, x: np.ndarray):
     # Clear figure, create subplots
     fig.clear()
-    axes = fig.subplots(1, 2, gridspec_kw={'width_ratios': [5, 3]})
+    axes = fig.subplots(1, 3, gridspec_kw={'width_ratios': [1, 1, 1]})
 
     # (1) Create a scatter plot
     xs, ys = self.amplitude, self.sign_frequency
@@ -145,7 +154,11 @@ class EncoderAnalyzer(Plotter):
     if self.get('filter'):
       v = np.percentile(xs, self.get('xper'))
       x = x[np.argwhere(self.amplitude > v).ravel()]
-    self.imshow_w(axes[1], self.sort_rows(x), fig)
+    x = self.sort_rows(x)[::-1]
+    self.imshow_w(axes[1], x, fig)
+
+    # (3) Show spectrum
+    self.imshow_spectrum(axes[2], x)
 
   # endregion: Plotting Method
 
@@ -161,6 +174,6 @@ if __name__ == '__main__':
   # metric_key = 'val RRMSE_temporal'
 
   # (2) Plot weights
-  EncoderAnalyzer.plot(weight_list, title='Encoder Analyzer',
+  EncoderAnalyzer.plot(weight_list[-31:], title='Encoder Analyzer',
                        fig_size=(10, 10))
 
