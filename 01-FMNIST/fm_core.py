@@ -60,6 +60,8 @@ th.eval_batch_size = 100
 
 
 def activate():
+  if 'deactivate' in th.developer_code: return
+
   # Load data
   train_set, val_set, test_set = du.load_data()
   if th.centralize_data: th.data_mean = train_set.feature_mean
