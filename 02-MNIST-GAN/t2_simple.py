@@ -53,6 +53,7 @@ def main(_):
   update_job_dir(id, model_name)
   summ_name = model_name
   th.prefix = '{}_'.format(date_string())
+  th.suffix = '_long'
 
   th.visible_gpu_id = 0
   # ---------------------------------------------------------------------------
@@ -66,16 +67,16 @@ def main(_):
   # 3. trainer setup
   # ---------------------------------------------------------------------------
   th.epoch = 1000
-  th.batch_size = 128
+  th.batch_size = 100
 
   th.learning_rate = 0.00001
 
   th.train = 1
   th.overwrite = True
   th.print_cycle = 20
-  th.probe_per_round = 0.1
+  th.probe_per_round = 0.2
 
-  th.epoch = 500
+  th.epoch = 1000
   # ---------------------------------------------------------------------------
   # 4. other stuff and activate
   # ---------------------------------------------------------------------------
