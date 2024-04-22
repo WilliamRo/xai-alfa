@@ -15,8 +15,9 @@ id = 1
 def model():
   th = core.th
   model = m.get_container()
-  for n in core.th.archi_string.split('-'):
-    model.add(m.mu.Dense(int(n), activation=th.activation))
+  if th.archi_string != '':
+    for n in th.archi_string.split('-'):
+      model.add(m.mu.Dense(int(n), activation=th.activation))
   return m.finalize(model)
 
 
@@ -45,7 +46,7 @@ def main(_):
   # ---------------------------------------------------------------------------
   th.model = model
 
-  th.archi_string = '128'
+  th.archi_string = '1'
   th.activation = 'relu'
   # ---------------------------------------------------------------------------
   # 3. trainer setup
