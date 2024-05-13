@@ -1,9 +1,6 @@
-from pictor import Pictor
 from pictor.xomics import FeatureExplorer, Omix
-from sie.misc import load_features_and_targets
 
 import os
-
 
 
 # -----------------------------------------------------------------------------
@@ -28,22 +25,27 @@ rad_omix.target_labels[1] = 'TRG>3'
 # -----------------------------------------------------------------------------
 omix = cli_omix * rad_omix
 
-# cli_omix.show_in_explorer()
-rad_omix.show_in_explorer()
+from pictor.xomics.ml.xgboost import XGBClassifier
 
-# omix.show_in_explorer()
-# cli_omix.show_in_explorer()
-# rad_omix.show_in_explorer()
+model = XGBClassifier(
+  ignore_warnings=0,
+  n_jobs= 1,
+)
 
-# omices = omix.split(1, 1, 1)
-# for o in omices: o.report()
-# print()
-# print(sum(omices[1:], start=omices[0]).report())
+model.fit_k_fold(
+  cli_omix,
+  verbose=1,
 
+  cm=1,
+  print_cm=0,
 
+  auc=1,
+  plot_roc=0,
+  random_state=1219,
+)
+"""random_state=1219,
 
-
-
+"""
 
 
 

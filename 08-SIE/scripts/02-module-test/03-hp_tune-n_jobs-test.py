@@ -3,6 +3,7 @@ from pictor.xomics import FeatureExplorer, Omix
 from sie.misc import load_features_and_targets
 
 import os
+import pictor.xomics.ml.logistic_regression as lr
 
 
 
@@ -28,23 +29,7 @@ rad_omix.target_labels[1] = 'TRG>3'
 # -----------------------------------------------------------------------------
 omix = cli_omix * rad_omix
 
-# cli_omix.show_in_explorer()
-rad_omix.show_in_explorer()
-
-# omix.show_in_explorer()
-# cli_omix.show_in_explorer()
-# rad_omix.show_in_explorer()
-
-# omices = omix.split(1, 1, 1)
-# for o in omices: o.report()
-# print()
-# print(sum(omices[1:], start=omices[0]).report())
-
-
-
-
-
-
-
-
+hp = lr.tune(omix, verbose=1, n_jobs=1)
+hp = lr.tune(omix, verbose=1, n_jobs=10)
+hp = lr.tune(omix, verbose=1, n_jobs=100)
 
