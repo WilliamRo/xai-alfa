@@ -1,6 +1,6 @@
-from pictor import Pictor
 from pictor.xomics import FeatureExplorer, Omix
-from sie.misc import load_features_and_targets
+from pictor.xomics.ml.logistic_regression import LogisticRegression
+from pictor.xomics.evaluation.pipeline import Pipeline
 
 import os
 
@@ -26,25 +26,15 @@ rad_omix.target_labels[1] = 'TRG>3'
 # -----------------------------------------------------------------------------
 # Load features and targets
 # -----------------------------------------------------------------------------
-omix = cli_omix * rad_omix
+# omix = cli_omix * rad_omix
+omix = cli_omix
 
-cli_omix.show_in_explorer()
-# rad_omix.show_in_explorer()
+pi = Pipeline(omix, ignore_warnings=1, save_models=0)
 
-# omix.show_in_explorer()
-# cli_omix.show_in_explorer()
-# rad_omix.show_in_explorer()
+pi.create_sub_space('lasso', repeats=5, show_progress=1)
 
-# omices = omix.split(1, 1, 1)
-# for o in omices: o.report()
-# print()
-# print(sum(omices[1:], start=omices[0]).report())
+pi.fit_traverse_spaces('lr', repeats=5, show_progress=1)
+pi.fit_traverse_spaces('xgb', repeats=5, show_progress=1)
+# pi.fit_traverse_spaces('svm', repeats=5, show_progress=1)
 
-
-
-
-
-
-
-
-
+omix.save(os.path.join(data_dir, '20240515-cli.omix'), verbose=True)

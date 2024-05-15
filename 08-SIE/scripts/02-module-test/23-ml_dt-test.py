@@ -43,10 +43,20 @@ dt.fit_k_fold(
   auc=1,
   plot_roc=0,
   random_state=1219,
+
+  # show_signature=1,
 )
 """
 :: Evaluation Result (Prostate-305-clinic):
 :: random_state=1219,
+
+[TUNE] >> Tuning hyperparameters using grid search...
+[TUNE] >> ConvergenceWarnings may appear if warning is not ignored.
+Fitting 5 folds for each of 24 candidates, totalling 120 fits
+[TUNE] >> Best hyperparameters: {'criterion': 'gini', 'max_depth': 4, 'max_features': 'sqrt'}
+[TUNE] >> Best score: 0.8525
+[TUNE] >> Elapsed time: 0.23 seconds
+
 ------------------------------------------------------
                Precision    Recall  F1-Score  Support 
 ======================================================

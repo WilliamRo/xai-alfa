@@ -35,20 +35,26 @@ omix = cli_omix * rad_omix
 # hp = lr.tune(omix, verbose=1, n_jobs=10)
 # hp = lr.fit(cli_omix, hp_verbose=1, verbose=0, cm=True)
 lr = LogisticRegression(
-  ignore_warnings=0,
+  ignore_warnings=1,
 )
 
-lr.fit_k_fold(
+pkg = lr.fit_k_fold(
   cli_omix,
   verbose=1,
 
   cm=1,
-  print_cm=0,
+  print_cm=1,
+  plot_cm=0,
+  mi=0,
 
   auc=1,
   plot_roc=0,
   random_state=1219,
 )
+
+pkg_post = pkg.evaluate(cli_omix)
+pkg_post.report()
+
 """
 seed = 1219
 ------------------------------------------------------
